@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Caption & Hashtag Studio — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <!-- Left Column: Studio Controls -->
+    <div class="col-lg-5 col-xl-4">
+      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white sticky-top" style="top: 80px;">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 p-2" style="background: var(--primary-gradient) !important;">
+            <i class="bi bi-chat-quote fs-5"></i>
+          </span>
+          <div>
+            <h4 class="fw-bold mb-0">Caption Studio</h4>
+            <small class="text-muted">Hooks & Hashtag Generator</small>
+          </div>
+        </div>
+
+        <form method="get">
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Topic or Concept Keyword</label>
+            <input type="text" name="topic" class="form-control" placeholder="e.g. skin barrier repair, outfit transition" value="{{ topic }}" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Creator Niche</label>
+            <select name="niche" class="form-select">
+              <option value="beauty" {% if niche == 'beauty' %}selected{% endif %}>Beauty</option>
+              <option value="skincare" {% if niche == 'skincare' %}selected{% endif %}>Skincare</option>
+              <option value="fashion" {% if niche == 'fashion' %}selected{% endif %}>Fashion</option>
+              <option value="lifestyle" {% if niche == 'lifestyle' %}selected{% endif %}>Lifestyle</option>
+              <option value="fitness" {% if niche == 'fitness' %}selected{% endif %}>Fitness</option>
+              <option value="food" {% if niche == 'food' %}selected{% endif %}>Food</option>
+              <option value="travel" {% if niche == 'travel' %}selected{% endif %}>Travel</option>
+              <option value="education" {% if niche == 'education' %}selected{% endif %}>Education</option>
+              <option value="technology" {% if niche == 'technology' %}selected{% endif %}>Technology</option>
+              <option value="business" {% if niche == 'business' %}selected{% endif %}>Small Business</option>
+              <option value="ugc" {% if niche == 'ugc' %}selected{% endif %}>UGC Creation</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Brand Tone</label>
+            <select name="tone" class="form-select">
+              <option value="friendly" {% if tone == 'friendly' %}selected{% endif %}>Friendly & Relatable</option>
+              <option value="informative" {% if tone == 'informative' %}selected{% endif %}>Informative & Actionable</option>
+              <option value="aesthetic" {% if tone == 'aesthetic' %}selected{% endif %}>Aesthetic & Minimal</option>
+              <option value="humorous" {% if tone == 'humorous' %}selected{% endif %}>Humorous & Casual</option>
+              <option value="persuasive" {% if tone == 'persuasive' %}selected{% endif %}>Persuasive & Direct</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Caption Length</label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="length" id="lenShort" value="short" {% if length == 'short' %}checked{% endif %}>
+              <label class="btn btn-outline-secondary btn-sm" for="lenShort">Short</label>
+
+              <input type="radio" class="btn-check" name="length" id="lenMed" value="medium" {% if not length or length == 'medium' %}checked{% endif %}>
+              <label class="btn btn-outline-secondary btn-sm" for="lenMed">Medium</label>
+
+              <input type="radio" class="btn-check" name="length" id="lenLong" value="long" {% if length == 'long' %}checked{% endif %}>
+              <label class="btn btn-outline-secondary btn-sm" for="lenLong">Deep-Dive</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-sparkles"></i> Generate Caption & Tags
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: Results -->
+    <div class="col-lg-7 col-xl-8">
+      {% if caption_result %}
+        <!-- Generated Caption Box -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h5 class="fw-bold mb-0"><i class="bi bi-card-text text-primary me-2"></i> Generated Instagram Caption</h5>
+              <small class="text-muted">Topic: "{{ topic }}" • Tone: {{ tone|title }}</small>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" id="copy-caption-btn" onclick="copyToClipboard('caption-content', this)">
+              <i class="bi bi-clipboard me-1"></i> Copy Caption
+            </button>
+          </div>
+
+          <div class="p-3 bg-light rounded-3 font-monospace small border text-dark mb-3" id="caption-content" style="white-space: pre-line;">{{ caption_result.full_caption }}</div>
+
+          <div class="alert alert-light border small text-muted mb-0">
+            <i class="bi bi-info-circle text-primary me-1"></i>
+            Tip: Keep the first 125 characters (the hook) as engaging as possible before Instagram truncates it behind the <em>"...more"</em> fold.
+          </div>
+        </div>
+
+        <!-- Categorized Hashtags Box -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h5 class="fw-bold mb-0"><i class="bi bi-hash text-primary me-2"></i> Categorized Hashtags</h5>
+              <small class="text-muted">Structured for categorization and community discovery</small>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('all-hashtags-string', this)">
+              <i class="bi bi-clipboard me-1"></i> Copy All Tags
+            </button>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-globe text-primary me-1"></i> Broad Discovery Tags</div>
+                <div class="small text-muted">
+                  {% for t in hashtag_result.broad %}
+                    <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-tag text-success me-1"></i> Niche Focus Tags</div>
+                <div class="small text-muted">
+                  {% for t in hashtag_result.niche %}
+                    <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-people text-info me-1"></i> Community Tags</div>
+                <div class="small text-muted">
+                  {% for t in hashtag_result.community %}
+                    <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded-3 border h-100">
+                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-search text-warning me-1"></i> Topic-Specific Tags</div>
+                <div class="small text-muted">
+                  {% for t in hashtag_result.topic %}
+                    <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-2 bg-light rounded-3 small border font-monospace text-primary" id="all-hashtags-string">
+            {{ hashtag_result.formatted_string }}
+          </div>
+          <div class="text-muted mt-2" style="font-size: 0.75rem;">
+            * Note: Hashtags assist with topic discovery and categorization, but do not guarantee algorithm distribution.
+          </div>
+        </div>
+      {% else %}
+        <!-- Blank State -->
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-auto">
+          <div class="py-5">
+            <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle p-3 mb-3" style="width: 72px; height: 72px;">
+              <i class="bi bi-chat-heart fs-2"></i>
+            </span>
+            <h3 class="fw-bold mb-2">Write Captions That Convert</h3>
+            <p class="text-muted mx-auto mb-4" style="max-width: 460px;">
+              Enter a topic on the left to instantly generate structured captions with curiosity hooks and clean, categorized hashtags.
+            </p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

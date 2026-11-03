@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ & Knowledge Base — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary rounded-pill py-2 px-3 fw-bold mb-2">
+          Knowledge Base (SQL API Powered)
+        </span>
+        <h1 class="display-6 fw-bold mb-2">Frequently Asked Questions</h1>
+        <p class="text-muted mx-auto" style="max-width: 560px;">
+          Find instant answers to common questions about CreatorSpark, Instagram content formats, hooks, and account settings.
+        </p>
+      </div>
+
+      <!-- Search & Category Filters -->
+      <div class="card border-0 shadow-sm p-3 rounded-4 bg-white mb-4">
+        <div class="input-group mb-3">
+          <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+          <input type="text" id="faq-search" class="form-control border-start-0 bg-light" placeholder="Search questions (e.g. reels, hashtags, error codes, planner)...">
+        </div>
+
+        <!-- Dynamic Category Pills Container -->
+        <div class="d-flex flex-wrap gap-2" id="faq-categories">
+          <button class="btn btn-sm btn-primary category-btn active" data-category="all">All FAQs</button>
+          <!-- Dynamic categories populated via API -->
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="faq-loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading knowledge base...</span>
+        </div>
+        <div class="text-muted small mt-2">Retrieving FAQs from <code>/api/faqs/</code>...</div>
+      </div>
+
+      <!-- Error State -->
+      <div id="faq-error" class="alert alert-danger d-none border-0 shadow-sm p-4 text-center rounded-4">
+        <i class="bi bi-exclamation-triangle fs-2 d-block mb-2"></i>
+        <h5 class="fw-bold mb-1">Unable to Load FAQs</h5>
+        <p class="small text-muted mb-3">Failed to communicate with <code>/api/faqs/</code>. Please check your internet connection or ask the Assistant.</p>
+        <button class="btn btn-sm btn-outline-danger" onclick="loadFAQs()">Retry API Request</button>
+      </div>
+
+      <!-- FAQ Accordion Container -->
+      <div class="accordion border-0 shadow-sm rounded-4 overflow-hidden" id="faqAccordion">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="faq-empty" class="text-center py-5 d-none bg-white rounded-4 shadow-sm p-4">
+        <i class="bi bi-question-diamond fs-1 text-muted d-block mb-2"></i>
+        <h5 class="fw-bold">No matching questions found</h5>
+        <p class="small text-muted mb-3">Can't find what you're looking for? Ask our Spark Assistant directly.</p>
+        <button class="btn btn-sm btn-primary" onclick="window.openAssistantWithPrompt('I could not find an FAQ for my question.')">
+          Ask Spark Assistant
+        </button>
+      </div>
+
+      <!-- Bottom Card: Need More Help? -->
+      <div class="card border-0 shadow-sm rounded-4 bg-primary text-white p-4 p-md-5 mt-5" style="background: var(--primary-gradient) !important;">
+        <div class="row align-items-center">
+          <div class="col-md-8 mb-3 mb-md-0">
+            <h4 class="fw-bold mb-1">Have a specific question not listed here?</h4>
+            <p class="text-white-50 small mb-0">Our Assistant can explain custom error codes, generate ideas on the fly, or open a support ticket for our engineering team.</p>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <button class="btn btn-light text-primary fw-bold px-4 py-2" onclick="window.openAssistantWithPrompt('Help with platform features')">
+              <i class="bi bi-chat-dots me-1"></i> Open Assistant
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentCategory = 'all';
+  let searchQuery = '';
+
+  async function loadFAQs() {
+    const loading = document.getElementById('faq-loading');
+    const errorBox = document.getElementById('faq-error');
+    const emptyBox = document.getElementById('faq-empty');
+    const accordion = document.getElementById('faqAccordion');
+    const categoriesContainer = document.getElementById('faq-categories');
+
+    loading.classList.remove('d-none');
+    errorBox.classList.add('d-none');
+    emptyBox.classList.add('d-none');
+    accordion.innerHTML = '';
+
+    let url = '/api/faqs/?';
+    if (currentCategory && currentCategory !== 'all') {
+      url += `category=${encodeURIComponent(currentCategory)}&`;
+    }
+    if (searchQuery) {
+      url += `q=${encodeURIComponent(searchQuery)}&`;
+    }
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('API response was not OK');
+
+      const data = await response.json();
+      loading.classList.add('d-none');
+
+      // Populate category pills if not already present
+      if (categoriesContainer.children.length <= 1 && data.categories) {
+        data.categories.forEach(cat => {
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-sm btn-outline-secondary category-btn rounded-pill px-3';
+          btn.textContent = cat;
+          btn.setAttribute('data-category', cat);
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => {
+              b.classList.remove('btn-primary', 'active');
+              b.classList.add('btn-outline-secondary');
+            });
+            btn.classList.add('btn-primary', 'active');
+            btn.classList.remove('btn-outline-secondary');
+            currentCategory = cat;
+            loadFAQs();
+          });
+          categoriesContainer.appendChild(btn);
+        });
+      }
+
+      if (!data.results || data.results.length === 0) {
+        emptyBox.classList.remove('d-none');
+        return;
+      }
+
+      data.results.forEach((faq, index) => {
+        const item = document.createElement('div');
+        item.className = 'accordion-item border-0 border-bottom';
+        item.innerHTML = `
+          <h2 class="accordion-header" id="heading-${faq.id}">
+            <button class="accordion-button ${index > 0 ? 'collapsed' : ''} fw-bold text-dark py-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${faq.id}" aria-expanded="${index === 0 ? 'true' : 'false'}" aria-controls="collapse-${faq.id}">
+              <span class="badge bg-light text-primary border me-2 small">${faq.category}</span>
+              ${faq.question}
+            </button>
+          </h2>
+          <div id="collapse-${faq.id}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" aria-labelledby="heading-${faq.id}" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted pt-1 pb-3" style="line-height: 1.6;">
+              ${faq.answer}
+              <div class="mt-3 pt-2 border-top d-flex justify-content-end">
+                <button class="btn btn-sm btn-link text-primary p-0" onclick="window.openAssistantWithPrompt('${faq.question.replace(/'/g, "\\'")}')">
+                  <i class="bi bi-chat-quote"></i> Ask Assistant about this
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        accordion.appendChild(item);
+      });
+
+    } catch (err) {
+      console.error('Error fetching FAQs:', err);
+      loading.classList.add('d-none');
+      errorBox.classList.remove('d-none');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadFAQs();
+
+    const searchInput = document.getElementById('faq-search');
+    let debounceTimer;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        searchQuery = e.target.value.trim();
+        loadFAQs();
+      }, 300);
+    });
+
+    // Reset category handler for "All"
+    const allBtn = document.querySelector('[data-category="all"]');
+    if (allBtn) {
+      allBtn.addEventListener('click', () => {
+        document.querySelectorAll('.category-btn').forEach(b => {
+          b.classList.remove('btn-primary', 'active');
+          b.classList.add('btn-outline-secondary');
+        });
+        allBtn.classList.add('btn-primary', 'active');
+        allBtn.classList.remove('btn-outline-secondary');
+        currentCategory = 'all';
+        loadFAQs();
+      });
+    }
+  });
+</script>
+{% endblock %}

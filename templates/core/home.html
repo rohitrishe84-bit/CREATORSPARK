@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}CreatorSpark — Instagram Content Creation & Planning Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 py-lg-6 text-center position-relative overflow-hidden">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-9 col-xl-8">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill py-2 px-3 fw-bold mb-3 d-inline-flex align-items-center gap-1">
+          <i class="bi bi-stars"></i> Powered by Structured Content Strategy Engine
+        </span>
+        <h1 class="display-4 fw-extrabold text-dark tracking-tight mb-3">
+          Never Run Out of <span style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Instagram Ideas</span> Again.
+        </h1>
+        <p class="lead text-muted mb-4 px-md-4">
+          Turn your niche into high-converting Reels, swipeable Carousels, captivating hooks, and viral captions. Built for influencers, UGC creators, beginner creators, and personal brands.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-5">
+          <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4 py-3 shadow">
+            <i class="bi bi-sparkles me-1"></i> Start Creating Free
+          </a>
+          <a href="{% url 'caption_studio' %}" class="btn btn-outline-primary btn-lg px-4 py-3">
+            <i class="bi bi-chat-quote me-1"></i> Try Caption Studio
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Card Mockup -->
+    <div class="row justify-content-center mt-2">
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-start p-3 p-md-4 bg-white">
+          <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold">Live Strategy Blueprint</span>
+              <span class="text-muted small">Niche: Skincare & Beauty</span>
+            </div>
+            <span class="badge badge-status badge-planned">Format: Reels (9:16)</span>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-7">
+              <h5 class="fw-bold text-dark mb-1">Skin Barrier Repair: 3 Costly Mistakes to Avoid</h5>
+              <div class="p-3 bg-light rounded-3 mb-2 font-monospace small border">
+                <strong>Visual Hook [0-3s]:</strong> "Stop using hot water on your morning cleanse if you want glass skin..."
+              </div>
+              <p class="text-muted small mb-0">
+                • Target Audience: Creators looking for dermatologist-backed routines<br>
+                • Goal: Drive saves, comments, and trust with before/after ingredient swatches
+              </p>
+            </div>
+            <div class="col-md-5 d-flex flex-column justify-content-center bg-light p-3 rounded-3 border">
+              <div class="small fw-bold text-primary mb-1"><i class="bi bi-hash"></i> Categorized Hashtags</div>
+              <div class="small text-muted mb-2">#SkinBarrier #SkincareRoutine #HealthySkin #DermTips #CreatorSpark</div>
+              <div class="d-flex gap-2">
+                <a href="{% url 'register' %}" class="btn btn-sm btn-primary w-100">Use This Template</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Supported Niches -->
+<section class="py-4 border-top border-bottom bg-white">
+  <div class="container text-center">
+    <div class="text-muted small fw-bold text-uppercase tracking-wider mb-3">Tailored Strategies For Every Creator Niche</div>
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-brush text-primary me-1"></i> Beauty</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-droplet text-primary me-1"></i> Skincare</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-handbag text-primary me-1"></i> Fashion</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-cup-hot text-primary me-1"></i> Lifestyle</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-airplane text-primary me-1"></i> Travel</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-egg-fried text-primary me-1"></i> Food</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-heart-pulse text-primary me-1"></i> Fitness</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-book text-primary me-1"></i> Education</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-laptop text-primary me-1"></i> Tech</span>
+      <span class="badge bg-light text-dark border py-2 px-3 rounded-pill"><i class="bi bi-camera-video text-primary me-1"></i> UGC Creators</span>
+    </div>
+  </div>
+</section>
+
+<!-- Core Features Grid -->
+<section class="py-5">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <span class="badge bg-primary-subtle text-primary rounded-pill py-2 px-3 fw-bold mb-2">Built For Creators</span>
+      <h2 class="display-6 fw-bold">Everything You Need to Dominate Instagram</h2>
+      <p class="text-muted mx-auto" style="max-width: 600px;">Stop staring at a blank screen. CreatorSpark turns your creative intent into ready-to-film content plans.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-4 border-0 shadow-sm">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-3 p-3" style="width: 52px; height: 52px;">
+            <i class="bi bi-magic fs-4"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Content Idea Generator</h5>
+          <p class="text-muted small mb-0">Select your niche, goal, and tone. Get structured outlines, visual directions, frame-by-frame pacing, and filming notes.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-4 border-0 shadow-sm">
+          <div class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-3 mb-3 p-3" style="width: 52px; height: 52px;">
+            <i class="bi bi-calendar3 fs-4"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Content Planner & Calendar</h5>
+          <p class="text-muted small mb-0">Schedule posts directly from your saved library. Track statuses from raw concept to published workflow stages.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-4 border-0 shadow-sm">
+          <div class="d-inline-flex align-items-center justify-content-center bg-warning-subtle text-warning rounded-3 mb-3 p-3" style="width: 52px; height: 52px;">
+            <i class="bi bi-chat-quote fs-4"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Caption & Hashtag Studio</h5>
+          <p class="text-muted small mb-0">Generate scroll-stopping hooks and copyable captions paired with categorized broad, niche, community, and topic hashtags.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-4 border-0 shadow-sm">
+          <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-3 mb-3 p-3" style="width: 52px; height: 52px;">
+            <i class="bi bi-images fs-4"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Inspiration Gallery</h5>
+          <p class="text-muted small mb-0">Browse curated creator photography via Pexels API integration to spark your next visual aesthetic and camera angle.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-4 border-0 shadow-sm">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-3 mb-3 p-3" style="width: 52px; height: 52px;">
+            <i class="bi bi-robot fs-4"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Spark Assistant Widget</h5>
+          <p class="text-muted small mb-0">Instant answers grounded in SQL FAQs and error code troubleshooting, with seamless ticket escalation for custom help.</p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 p-4 border-0 shadow-sm">
+          <div class="d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary rounded-3 mb-3 p-3" style="width: 52px; height: 52px;">
+            <i class="bi bi-bookmark-check fs-4"></i>
+          </div>
+          <h5 class="fw-bold mb-2">Organized Saved Library</h5>
+          <p class="text-muted small mb-0">Search, filter by format or goal, favorite top concepts, and edit ideas anytime to match your personal brand voice.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="py-5 bg-white border-top">
+  <div class="container py-4 text-center">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h2 class="display-6 fw-bold mb-3">Ready to Elevate Your Instagram Content?</h2>
+        <p class="text-muted lead mb-4">Join hundreds of creators building structured, consistent posting schedules with CreatorSpark.</p>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-5 py-3 shadow">Create Your Free Account</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Support Tickets — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <!-- Left Column: Submit New Ticket Form -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 p-2" style="background: var(--primary-gradient) !important;">
+            <i class="bi bi-headset fs-5"></i>
+          </span>
+          <div>
+            <h4 class="fw-bold mb-0">Create Support Ticket</h4>
+            <small class="text-muted">Direct Engineering Assistance</small>
+          </div>
+        </div>
+
+        <p class="text-muted small mb-4">
+          Encountered a platform error code (e.g. <code>CS-AUTH-001</code>) or have an account inquiry? Submit a ticket and our support team will follow up.
+        </p>
+
+        <form method="post">
+          {% csrf_token %}
+
+          {% if not user.is_authenticated %}
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">Your Name</label>
+              {{ form.guest_name }}
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">Your Email Address</label>
+              {{ form.guest_email }}
+            </div>
+          {% endif %}
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Subject / Issue Summary</label>
+            {{ form.subject }}
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Priority</label>
+              {{ form.priority }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Related Error Code</label>
+              {{ form.related_error_code }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Detailed Description</label>
+            {{ form.description }}
+            <div class="form-text small">Include steps to reproduce or what page you were on.</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+            <i class="bi bi-send-check me-1"></i> Submit Ticket
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: User's Existing Tickets -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 bg-white">
+        <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between">
+          <h5 class="fw-bold mb-0"><i class="bi bi-ticket-perforated text-primary me-2"></i> Your Support Tickets</h5>
+          <span class="badge bg-light text-dark border">{{ tickets.count }} Total</span>
+        </div>
+        <div class="card-body p-0">
+          {% if user.is_authenticated %}
+            {% if tickets %}
+              <div class="list-group list-group-flush">
+                {% for t in tickets %}
+                  <div class="list-group-item p-3 border-0 border-bottom d-flex align-items-center justify-content-between">
+                    <div>
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="font-monospace fw-bold text-primary small">#{{ t.ticket_id }}</span>
+                        <span class="badge {% if t.status == 'Resolved' %}bg-success{% elif t.status == 'In Progress' %}bg-warning text-dark{% elif t.status == 'Closed' %}bg-secondary{% else %}bg-primary{% endif %} rounded-pill small">
+                          {{ t.status }}
+                        </span>
+                        <span class="badge bg-light text-muted border small">{{ t.priority }} Priority</span>
+                        {% if t.related_error_code %}
+                          <span class="badge bg-danger-subtle text-danger small font-monospace">{{ t.related_error_code }}</span>
+                        {% endif %}
+                      </div>
+                      <a href="{% url 'ticket_detail' t.ticket_id %}" class="fw-bold text-dark text-decoration-none">
+                        {{ t.subject }}
+                      </a>
+                      <div class="text-muted small text-truncate" style="max-width: 440px;">
+                        {{ t.description }}
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <small class="text-muted d-block mb-1">{{ t.created_at|date:"M d, H:i" }}</small>
+                      <a href="{% url 'ticket_detail' t.ticket_id %}" class="btn btn-sm btn-outline-secondary py-1 px-2">
+                        View Details &rarr;
+                      </a>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="p-5 text-center text-muted">
+                <i class="bi bi-shield-check fs-1 text-success d-block mb-2"></i>
+                <h6 class="fw-bold">No support tickets filed</h6>
+                <p class="small mb-0">All systems operational! Use the form on the left if you ever need technical assistance.</p>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="p-5 text-center text-muted">
+              <i class="bi bi-lock fs-1 text-muted d-block mb-2"></i>
+              <h6 class="fw-bold">Sign in to track existing tickets</h6>
+              <p class="small mb-3">You can submit a ticket as a guest, or log in to view ticket status updates.</p>
+              <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">Sign In</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

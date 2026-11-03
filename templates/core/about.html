@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}About CreatorSpark — Instagram Creator Platform Architecture{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">About</li>
+        </ol>
+      </nav>
+
+      <div class="card border-0 shadow-sm p-4 p-md-5 rounded-4 mb-4">
+        <span class="badge bg-primary-subtle text-primary rounded-pill py-2 px-3 fw-bold mb-3 d-inline-block" style="width: fit-content;">
+          About CreatorSpark
+        </span>
+        <h1 class="display-6 fw-bold mb-3">Empowering Content Creators to Plan, Create, and Grow</h1>
+        <p class="lead text-muted mb-4">
+          CreatorSpark was engineered to eliminate creator burnout and inconsistent posting schedules on Instagram. By bridging structured content strategy templates with actionable calendar workflows, creators can focus on authentic execution rather than creative exhaustion.
+        </p>
+
+        <hr class="my-4">
+
+        <h4 class="fw-bold mb-3">The Problem We Solve</h4>
+        <p class="text-muted">
+          Content creation on Instagram has evolved into a full-time discipline. Creators must juggle hook writing, visual aesthetic planning, audio pacing, hashtag research, caption copywriting, and posting consistency. Many creators abandon their accounts not from lack of talent, but from the mental friction of deciding what to post each day. CreatorSpark transforms that struggle into a repeatable, modular system.
+        </p>
+
+        <h4 class="fw-bold mb-3 mt-4">Technical Architecture</h4>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border">
+              <h6 class="fw-bold text-primary mb-1"><i class="bi bi-layers"></i> Full-Stack Django Core</h6>
+              <p class="small text-muted mb-0">Robust Python Django ORM, session security, CSRF protection, and WhiteNoise static asset pipeline.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border">
+              <h6 class="fw-bold text-success mb-1"><i class="bi bi-database"></i> Hybrid Database Architecture</h6>
+              <p class="small text-muted mb-0">PostgreSQL (or SQLite locally) for relational creator data; MongoDB for chat conversations and user feedback.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border">
+              <h6 class="fw-bold text-warning mb-1"><i class="bi bi-shield-check"></i> Error Code Catalog</h6>
+              <p class="small text-muted mb-0">SQL-backed standardized error catalog (e.g. CS-AUTH-001, CS-GEN-001) ensuring transparent troubleshooting.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 border">
+              <h6 class="fw-bold text-info mb-1"><i class="bi bi-plug"></i> Third-Party API Integration</h6>
+              <p class="small text-muted mb-0">Pexels API integration with 5-second connection timeout, in-memory caching, and curated aesthetic fallback.</p>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="fw-bold mb-3">Responsible Creator Promise</h4>
+        <p class="text-muted mb-4">
+          CreatorSpark is a content planning and idea generation platform. We do not make misleading claims about guaranteed viral reach, nor do we perform automated unauthorized Instagram bot publishing. We believe in providing creators with tools that elevate their human storytelling.
+        </p>
+
+        <div class="d-flex gap-3">
+          <a href="{% url 'register' %}" class="btn btn-primary px-4">Get Started Free</a>
+          <a href="{% url 'faq' %}" class="btn btn-outline-primary px-4">Browse Platform FAQ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

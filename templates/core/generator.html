@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Content Idea Generator — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <!-- Left Column: Generator Form Controls -->
+    <div class="col-lg-5 col-xl-4">
+      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white sticky-top" style="top: 80px; z-index: 10;">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 p-2" style="background: var(--primary-gradient) !important;">
+            <i class="bi bi-magic fs-5"></i>
+          </span>
+          <div>
+            <h4 class="fw-bold mb-0">Idea Generator</h4>
+            <small class="text-muted">Structured Instagram Engine</small>
+          </div>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Instagram Niche</label>
+            {{ form.niche }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Instagram Format</label>
+            {{ form.format_type }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Content Objective / Goal</label>
+            {{ form.content_goal }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Brand Tone</label>
+            {{ form.tone }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Specific Topic or Keyword (Optional)</label>
+            {{ form.topic }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Target Audience (Optional)</label>
+            {{ form.target_audience }}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-sparkles"></i> Generate Instagram Idea
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column: Generated Output Display -->
+    <div class="col-lg-7 col-xl-8">
+      {% if generated_idea %}
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 mb-4">
+          <!-- Top Badges & Actions -->
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-bottom pb-3 mb-4">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <span class="badge bg-primary text-white rounded-pill px-3 py-2 text-capitalize">
+                {{ generated_idea.format_type }}
+              </span>
+              <span class="badge bg-light text-dark border rounded-pill px-3 py-2 text-capitalize">
+                {{ generated_idea.niche }}
+              </span>
+              <span class="badge bg-light text-muted border rounded-pill px-3 py-2">
+                <i class="bi bi-clock me-1"></i> {{ generated_idea.estimated_effort }}
+              </span>
+              <span class="badge bg-light text-muted border rounded-pill px-3 py-2">
+                <i class="bi bi-bar-chart me-1"></i> {{ generated_idea.difficulty_level }}
+              </span>
+            </div>
+
+            <div class="d-flex gap-2">
+              {% if not generated_idea.is_saved %}
+                <a href="{% url 'save_idea' generated_idea.id %}" class="btn btn-sm btn-primary">
+                  <i class="bi bi-bookmark-plus me-1"></i> Save to Library
+                </a>
+              {% else %}
+                <span class="btn btn-sm btn-outline-success disabled"><i class="bi bi-check2"></i> Saved</span>
+              {% endif %}
+              <a href="{% url 'schedule_idea' generated_idea.id %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-calendar-plus me-1"></i> Schedule
+              </a>
+            </div>
+          </div>
+
+          <!-- Title & Core Concept -->
+          <h2 class="h3 fw-bold text-dark mb-2">{{ generated_idea.title }}</h2>
+          <p class="text-muted mb-4">{{ generated_idea.main_concept }}</p>
+
+          <!-- The Hook (Crucial for Instagram) -->
+          <div class="p-3 mb-4 rounded-3 border-start border-4 border-primary bg-light">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="fw-bold small text-primary text-uppercase tracking-wider">
+                <i class="bi bi-lightning-charge-fill me-1"></i> Attention-Grabbing Hook (0:00 - 0:03)
+              </span>
+              <button class="btn btn-sm btn-link text-muted p-0" onclick="copyToClipboard('hook-text', this)">
+                <i class="bi bi-clipboard"></i> Copy Hook
+              </button>
+            </div>
+            <div class="fw-bold text-dark fs-6" id="hook-text">{{ generated_idea.hook }}</div>
+          </div>
+
+          <!-- Step-by-Step Content Outline -->
+          <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h5 class="fw-bold mb-0"><i class="bi bi-list-ol text-primary me-2"></i> Content Structure & Outline</h5>
+              <button class="btn btn-sm btn-outline-secondary py-0" onclick="copyToClipboard('outline-text', this)">
+                <i class="bi bi-clipboard"></i> Copy Outline
+              </button>
+            </div>
+            <div class="p-3 bg-light rounded-3 font-monospace small border" id="outline-text" style="white-space: pre-line;">{{ generated_idea.content_outline }}</div>
+          </div>
+
+          <!-- Visual Direction & Aesthetic -->
+          <div class="mb-4">
+            <h5 class="fw-bold mb-2"><i class="bi bi-camera-reels text-primary me-2"></i> Visual Direction & Lighting</h5>
+            <div class="p-3 bg-light rounded-3 small border text-muted">
+              {{ generated_idea.visual_direction }}
+            </div>
+          </div>
+
+          <!-- Filming & Editing Tips -->
+          {% if generated_idea.filming_editing_tips %}
+            <div class="mb-4">
+              <h5 class="fw-bold mb-2"><i class="bi bi-film text-primary me-2"></i> Filming & Editing Pro-Tips</h5>
+              <div class="p-3 bg-light rounded-3 small border text-dark">
+                {{ generated_idea.filming_editing_tips }}
+              </div>
+            </div>
+          {% endif %}
+
+          <!-- Ready-to-Post Caption -->
+          <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h5 class="fw-bold mb-0"><i class="bi bi-card-text text-primary me-2"></i> Ready-to-Post Caption</h5>
+              <button class="btn btn-sm btn-outline-primary py-0" onclick="copyToClipboard('caption-text', this)">
+                <i class="bi bi-clipboard"></i> Copy Caption
+              </button>
+            </div>
+            <div class="p-3 bg-light rounded-3 font-monospace small border text-dark" id="caption-text" style="white-space: pre-line;">{{ generated_idea.caption }}</div>
+          </div>
+
+          <!-- Call to Action -->
+          <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between">
+            <div>
+              <span class="small fw-bold text-muted text-uppercase d-block">Suggested Call To Action (CTA):</span>
+              <strong class="text-dark">{{ generated_idea.call_to_action }}</strong>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('{{ generated_idea.call_to_action|escapejs }}'); this.innerText='Copied!';">
+              Copy CTA
+            </button>
+          </div>
+        </div>
+      {% else %}
+        <!-- Blank State -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-5 text-center my-auto">
+          <div class="py-5">
+            <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle p-3 mb-3" style="width: 72px; height: 72px;">
+              <i class="bi bi-stars fs-2"></i>
+            </span>
+            <h3 class="fw-bold mb-2">Ready to Spark Your Next Post?</h3>
+            <p class="text-muted mx-auto mb-4" style="max-width: 480px;">
+              Select your niche and preferences on the left, then click <strong>"Generate Instagram Idea"</strong> to receive an actionable, structured blueprint complete with hooks, outlines, and captions.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+              <span class="badge bg-light text-dark border py-2 px-3 rounded-pill">Reels (9:16)</span>
+              <span class="badge bg-light text-dark border py-2 px-3 rounded-pill">Carousels (4:5)</span>
+              <span class="badge bg-light text-dark border py-2 px-3 rounded-pill">Stories</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

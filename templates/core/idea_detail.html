@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ idea.title }} — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'saved_ideas' %}">Saved Ideas</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ idea.title|truncatewords:6 }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
+        <!-- Top Metadata -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-bottom pb-3 mb-4">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary rounded-pill px-3 py-2 text-capitalize">{{ idea.format_type }}</span>
+            <span class="badge bg-light text-dark border rounded-pill px-3 py-2 text-capitalize">{{ idea.niche }}</span>
+            <span class="badge bg-light text-muted border rounded-pill px-3 py-2">Goal: {{ idea.content_goal|title }}</span>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="{% url 'toggle_favorite' idea.id %}" class="btn btn-sm btn-outline-danger" title="Favorite">
+              <i class="bi {% if idea.is_favorite %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+            </a>
+            <a href="{% url 'idea_edit' idea.id %}" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-pencil me-1"></i> Edit
+            </a>
+            <a href="{% url 'schedule_idea' idea.id %}" class="btn btn-sm btn-primary">
+              <i class="bi bi-calendar-plus me-1"></i> Schedule
+            </a>
+          </div>
+        </div>
+
+        <h1 class="h2 fw-bold text-dark mb-2">{{ idea.title }}</h1>
+        <p class="lead text-muted mb-4">{{ idea.main_concept }}</p>
+
+        <!-- Hook Section -->
+        <div class="p-3 mb-4 rounded-3 border-start border-4 border-primary bg-light">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <span class="fw-bold small text-primary text-uppercase tracking-wider">
+              <i class="bi bi-lightning-charge-fill me-1"></i> Hook (0:00 - 0:03)
+            </span>
+            <button class="btn btn-sm btn-link text-muted p-0" onclick="copyToClipboard('detail-hook', this)">
+              <i class="bi bi-clipboard"></i> Copy Hook
+            </button>
+          </div>
+          <div class="fw-bold text-dark fs-5" id="detail-hook">{{ idea.hook }}</div>
+        </div>
+
+        <!-- Content Outline -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="fw-bold mb-0"><i class="bi bi-list-ol text-primary me-2"></i> Content Structure & Outline</h5>
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick="copyToClipboard('detail-outline', this)">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+          </div>
+          <div class="p-3 bg-light rounded-3 font-monospace small border" id="detail-outline" style="white-space: pre-line;">{{ idea.content_outline }}</div>
+        </div>
+
+        <!-- Visual Direction -->
+        <div class="mb-4">
+          <h5 class="fw-bold mb-2"><i class="bi bi-camera-reels text-primary me-2"></i> Visual Direction & Lighting</h5>
+          <div class="p-3 bg-light rounded-3 small border text-muted">
+            {{ idea.visual_direction }}
+          </div>
+        </div>
+
+        <!-- Filming Tips -->
+        {% if idea.filming_editing_tips %}
+          <div class="mb-4">
+            <h5 class="fw-bold mb-2"><i class="bi bi-film text-primary me-2"></i> Filming & Editing Tips</h5>
+            <div class="p-3 bg-light rounded-3 small border text-dark">
+              {{ idea.filming_editing_tips }}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Ready Caption -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="fw-bold mb-0"><i class="bi bi-card-text text-primary me-2"></i> Caption</h5>
+            <button class="btn btn-sm btn-outline-primary py-0" onclick="copyToClipboard('detail-caption', this)">
+              <i class="bi bi-clipboard"></i> Copy Caption
+            </button>
+          </div>
+          <div class="p-3 bg-light rounded-3 font-monospace small border text-dark" id="detail-caption" style="white-space: pre-line;">{{ idea.caption }}</div>
+        </div>
+
+        <!-- Hashtags -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="fw-bold mb-0"><i class="bi bi-hash text-primary me-2"></i> Hashtags</h5>
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick="copyToClipboard('detail-tags', this)">
+              <i class="bi bi-clipboard"></i> Copy Tags
+            </button>
+          </div>
+          <div class="p-3 bg-light rounded-3 small border text-primary" id="detail-tags">{{ idea.hashtags }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Info -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <h5 class="fw-bold mb-3">Idea Parameters</h5>
+        <ul class="list-unstyled small mb-4 d-flex flex-column gap-2">
+          <li class="d-flex justify-content-between border-bottom pb-2">
+            <span class="text-muted">Target Audience:</span>
+            <strong class="text-dark">{{ idea.target_audience|default:'General niche followers' }}</strong>
+          </li>
+          <li class="d-flex justify-content-between border-bottom pb-2">
+            <span class="text-muted">Tone:</span>
+            <strong class="text-dark text-capitalize">{{ idea.tone|default:'Relatable' }}</strong>
+          </li>
+          <li class="d-flex justify-content-between border-bottom pb-2">
+            <span class="text-muted">Estimated Effort:</span>
+            <strong class="text-dark">{{ idea.estimated_effort }}</strong>
+          </li>
+          <li class="d-flex justify-content-between border-bottom pb-2">
+            <span class="text-muted">Difficulty:</span>
+            <strong class="text-dark">{{ idea.difficulty_level }}</strong>
+          </li>
+          <li class="d-flex justify-content-between border-bottom pb-2">
+            <span class="text-muted">Saved Date:</span>
+            <span class="text-dark">{{ idea.created_at|date:"M d, Y" }}</span>
+          </li>
+        </ul>
+
+        <div class="d-flex flex-column gap-2">
+          <a href="{% url 'schedule_idea' idea.id %}" class="btn btn-primary w-100">
+            <i class="bi bi-calendar-plus me-1"></i> Add to Content Calendar
+          </a>
+          <a href="{% url 'idea_edit' idea.id %}" class="btn btn-outline-secondary w-100">
+            <i class="bi bi-pencil me-1"></i> Edit Idea
+          </a>
+          <a href="{% url 'idea_delete' idea.id %}" class="btn btn-outline-danger w-100">
+            <i class="bi bi-trash me-1"></i> Delete Idea
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

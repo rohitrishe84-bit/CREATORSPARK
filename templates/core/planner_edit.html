@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Planned Post — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'planner' %}">Planner</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Edit Post</li>
+        </ol>
+      </nav>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <h2 class="h3 fw-bold mb-4">Edit Planned Post</h2>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Title</label>
+            {{ form.title }}
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Format</label>
+              {{ form.format_type }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Status</label>
+              {{ form.status }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Scheduled Date</label>
+              {{ form.scheduled_date }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Scheduled Time</label>
+              {{ form.scheduled_time }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Notes</label>
+            {{ form.notes }}
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'planner' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-bold">Update Post</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!-- Global Assistant Chat Widget (Requirement 2) -->
+<button id="cs-chat-launcher" type="button" aria-label="Open CreatorSpark Assistant">
+  <i class="bi bi-stars fs-5"></i>
+  <span>Ask Assistant</span>
+</button>
+
+<div id="cs-chat-container" role="dialog" aria-modal="true" aria-labelledby="chat-title">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="d-flex align-items-center gap-2">
+      <span class="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle p-1" style="width: 28px; height: 28px;">
+        <i class="bi bi-robot"></i>
+      </span>
+      <div>
+        <div class="fw-bold fs-6 lh-1" id="chat-title">Spark Assistant</div>
+        <small class="text-white-50" style="font-size: 0.7rem;">SQL Knowledge & Support Agent</small>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-1">
+      <button class="btn btn-sm btn-link text-white p-1" id="cs-chat-minimize" title="Minimize" aria-label="Minimize Chat">
+        <i class="bi bi-dash-lg"></i>
+      </button>
+      <button class="btn btn-sm btn-link text-white p-1" id="cs-chat-close" title="Close" aria-label="Close Chat">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages History -->
+  <div class="chat-messages" id="cs-chat-messages">
+    <div class="chat-bubble assistant">
+      <div>
+        Hello! I'm your <strong>CreatorSpark Assistant</strong>. ⚡<br><br>
+        I can answer platform FAQs, explain error codes (e.g. <code>CS-AUTH-001</code>), help plan your Instagram content strategy, or open a support ticket for you.
+      </div>
+      <span class="timestamp">Just now</span>
+    </div>
+  </div>
+
+  <!-- Suggestion Chips -->
+  <div class="chat-suggestions">
+    <button type="button" class="chat-chip" data-prompt="How does the idea generator work?">💡 How generator works</button>
+    <button type="button" class="chat-chip" data-prompt="How do I generate Reel ideas?">🎬 Reel ideas</button>
+    <button type="button" class="chat-chip" data-prompt="Explain error CS-AUTH-001">⚠️ CS-AUTH-001</button>
+    <button type="button" class="chat-chip" data-prompt="How do I create a support ticket?">🎫 Open a ticket</button>
+  </div>
+
+  <!-- Input Form -->
+  <form id="cs-chat-form" class="chat-input-area" autocomplete="off">
+    <input
+      type="text"
+      id="cs-chat-input"
+      class="form-control form-control-sm border-0 bg-light"
+      placeholder="Ask a question or enter an error code..."
+      required
+    >
+    <button type="submit" class="btn btn-sm btn-primary px-3" aria-label="Send Message">
+      <i class="bi bi-send-fill"></i>
+    </button>
+  </form>
+</div>

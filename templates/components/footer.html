@@ -1,0 +1,52 @@
+<footer class="bg-white border-top py-5 mt-5">
+  <div class="container">
+    <div class="row g-4 justify-content-between">
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 p-1" style="width: 28px; height: 28px; background: var(--primary-gradient) !important;">
+            <i class="bi bi-stars"></i>
+          </span>
+          <span class="fw-bold fs-5">Creator<span class="text-primary">Spark</span></span>
+        </div>
+        <p class="text-muted small mb-3">
+          The all-in-one Instagram content creation, hook generation, and scheduling platform built for modern creators, UGC talent, and growing personal brands.
+        </p>
+        <div class="small text-muted">
+          &copy; {{ CURRENT_YEAR }} CreatorSpark. All rights reserved.
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <h6 class="fw-bold text-dark mb-3">Product</h6>
+        <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+          <li><a href="{% url 'generator' %}" class="text-muted text-decoration-none">Idea Generator</a></li>
+          <li><a href="{% url 'saved_ideas' %}" class="text-muted text-decoration-none">Saved Ideas</a></li>
+          <li><a href="{% url 'planner' %}" class="text-muted text-decoration-none">Content Planner</a></li>
+          <li><a href="{% url 'caption_studio' %}" class="text-muted text-decoration-none">Caption Studio</a></li>
+          <li><a href="{% url 'inspiration' %}" class="text-muted text-decoration-none">Inspiration Gallery</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <h6 class="fw-bold text-dark mb-3">Knowledge</h6>
+        <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+          <li><a href="{% url 'faq' %}" class="text-muted text-decoration-none">FAQ Knowledge Base</a></li>
+          <li><a href="{% url 'about' %}" class="text-muted text-decoration-none">About CreatorSpark</a></li>
+          <li><a href="{% url 'tickets' %}" class="text-muted text-decoration-none">Support Tickets</a></li>
+          <li><a href="{% url 'api_faqs' %}" class="text-muted text-decoration-none" target="_blank">FAQ REST API</a></li>
+          <li><a href="{% url 'health_check' %}" class="text-muted text-decoration-none" target="_blank">System Health</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-4 col-lg-3">
+        <h6 class="fw-bold text-dark mb-3">Need Help?</h6>
+        <p class="text-muted small mb-3">
+          Have questions about your Instagram strategy or need technical assistance? Chat directly with our Assistant or file a support ticket.
+        </p>
+        <button class="btn btn-sm btn-outline-primary w-100" onclick="window.openAssistantWithPrompt('How do I plan my weekly Instagram content?')">
+          <i class="bi bi-chat-dots me-1"></i> Ask Assistant
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>

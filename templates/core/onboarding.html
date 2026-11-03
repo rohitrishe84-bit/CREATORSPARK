@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Creator Onboarding — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm p-4 p-md-5 rounded-4 bg-white">
+        <div class="mb-4">
+          <span class="badge bg-primary-subtle text-primary rounded-pill py-2 px-3 fw-bold mb-2">Step 1 of 1: Personalize</span>
+          <h2 class="display-6 fw-bold mb-2">Configure Your Creator Persona</h2>
+          <p class="text-muted small">
+            Setting your niche, audience, and goals allows CreatorSpark to tailor hooks, outlines, and hashtags to your exact style.
+          </p>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Creator / Brand Display Name</label>
+              {{ form.display_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Instagram Handle</label>
+              {{ form.instagram_handle }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Primary Instagram Niche</label>
+              {{ form.niche }}
+              <div class="form-text small">e.g. Beauty, Skincare, Lifestyle, UGC, Fitness</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Creator Experience Level</label>
+              {{ form.experience_level }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Target Audience Profile</label>
+            {{ form.target_audience }}
+            <div class="form-text small">Who are you creating for? (e.g., "Beginner gym-goers looking for simple form tips")</div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-dark">Primary Content Goal</label>
+              {{ form.content_goals }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-dark">Preferred Format</label>
+              {{ form.preferred_formats }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-dark">Brand Voice / Tone</label>
+              {{ form.preferred_tone }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Creator Bio / Mission (Optional)</label>
+            {{ form.bio }}
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center pt-2">
+            <a href="{% url 'dashboard' %}" class="btn btn-link text-muted text-decoration-none">Skip for now</a>
+            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">
+              Save Preferences & Start Creating <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

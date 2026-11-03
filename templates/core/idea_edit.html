@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Idea — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'saved_ideas' %}">Saved Ideas</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'idea_detail' idea.id %}">{{ idea.title|truncatewords:4 }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Edit</li>
+        </ol>
+      </nav>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <h2 class="h3 fw-bold mb-4">Edit Saved Content Idea</h2>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Title</label>
+            {{ form.title }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Main Concept</label>
+            {{ form.main_concept }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Hook (0:00 - 0:03)</label>
+            {{ form.hook }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Objective</label>
+            {{ form.objective }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Content Outline & Step-by-Step Frames</label>
+            {{ form.content_outline }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Visual Direction</label>
+            {{ form.visual_direction }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Caption</label>
+            {{ form.caption }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Hashtags</label>
+            {{ form.hashtags }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-dark">Call to Action (CTA)</label>
+            {{ form.call_to_action }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Filming & Editing Tips</label>
+            {{ form.filming_editing_tips }}
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'idea_detail' idea.id %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-bold">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

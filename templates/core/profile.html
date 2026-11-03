@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Settings — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Profile Settings</li>
+        </ol>
+      </nav>
+
+      <div class="card border-0 shadow-sm p-4 p-md-5 rounded-4 bg-white mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h2 class="h3 fw-bold mb-1">Creator Profile & Strategy Settings</h2>
+            <p class="text-muted small mb-0">Update your niche settings and creator preferences.</p>
+          </div>
+          <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold">
+            {{ profile.get_niche_display }}
+          </span>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Display Name</label>
+              {{ form.display_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Instagram Handle</label>
+              {{ form.instagram_handle }}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Instagram Niche</label>
+              {{ form.niche }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-dark">Experience Level</label>
+              {{ form.experience_level }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Target Audience</label>
+            {{ form.target_audience }}
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-dark">Content Goals</label>
+              {{ form.content_goals }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-dark">Preferred Formats</label>
+              {{ form.preferred_formats }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-dark">Brand Tone</label>
+              {{ form.preferred_tone }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-dark">Bio</label>
+            {{ form.bio }}
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary px-3">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-bold">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

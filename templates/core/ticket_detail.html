@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket #{{ ticket.ticket_id }} — CreatorSpark{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'tickets' %}">Support Tickets</a></li>
+          <li class="breadcrumb-item active" aria-current="page">#{{ ticket.ticket_id }}</li>
+        </ol>
+      </nav>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mb-4">
+        <!-- Header status -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-bottom pb-3 mb-4">
+          <div class="d-flex align-items-center gap-2">
+            <span class="font-monospace fw-bold text-primary fs-5">#{{ ticket.ticket_id }}</span>
+            <span class="badge {% if ticket.status == 'Resolved' %}bg-success{% elif ticket.status == 'In Progress' %}bg-warning text-dark{% elif ticket.status == 'Closed' %}bg-secondary{% else %}bg-primary{% endif %} rounded-pill px-3 py-2">
+              Status: {{ ticket.status }}
+            </span>
+            <span class="badge bg-light text-muted border rounded-pill px-3 py-2">
+              Priority: {{ ticket.priority }}
+            </span>
+          </div>
+          <small class="text-muted">Created {{ ticket.created_at|date:"M d, Y H:i" }}</small>
+        </div>
+
+        <h2 class="h3 fw-bold mb-3">{{ ticket.subject }}</h2>
+
+        {% if ticket.related_error_code %}
+          <div class="p-2 mb-3 bg-danger-subtle text-danger rounded-3 small font-monospace d-inline-block">
+            <i class="bi bi-exclamation-triangle me-1"></i> Associated Error Code: <strong>{{ ticket.related_error_code }}</strong>
+          </div>
+        {% endif %}
+
+        <div class="mb-4">
+          <h6 class="fw-bold text-muted small text-uppercase">Ticket Description</h6>
+          <div class="p-3 bg-light rounded-3 border text-dark" style="white-space: pre-line;">{{ ticket.description }}</div>
+        </div>
+
+        <!-- Resolution Notes -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-muted small text-uppercase">Staff Resolution Notes</h6>
+          {% if ticket.resolution_notes %}
+            <div class="p-3 bg-success-subtle text-success-emphasis rounded-3 border border-success-subtle" style="white-space: pre-line;">
+              <i class="bi bi-check-circle-fill me-1 text-success"></i> {{ ticket.resolution_notes }}
+            </div>
+          {% else %}
+            <div class="p-3 bg-light rounded-3 border text-muted small">
+              Our engineering and support team is reviewing your ticket. Updates will appear here.
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+          <a href="{% url 'tickets' %}" class="btn btn-outline-secondary">
+            &larr; Back to Tickets
+          </a>
+          <button class="btn btn-outline-primary" onclick="window.openAssistantWithPrompt('I need an update on ticket #{{ ticket.ticket_id }}')">
+            <i class="bi bi-stars me-1"></i> Ask Assistant
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
