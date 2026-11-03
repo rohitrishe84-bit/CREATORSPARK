@@ -1,4 +1,6 @@
 import json
+import calendar
+from collections import defaultdict
 from datetime import date, timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
@@ -351,6 +353,10 @@ def schedule_idea_view(request, idea_id):
         else:
             scheduled_date = scheduled_date_str
 
+        if not idea.is_saved:
+            idea.is_saved = True
+            idea.save()
+
         entry = PlannerEntry.objects.create(
             user=request.user,
             idea=idea,
@@ -389,14 +395,69 @@ def planner_view(request):
             post.user = request.user
             post.save()
             messages.success(request, f"Scheduled post \"{post.title}\" for {post.scheduled_date}.")
-            return redirect('planner')
+            return redirect(f"{request.path}?view={view_mode}")
         else:
             messages.error(request, "Please check post scheduling details. (Ref: CS-PLAN-001)")
     else:
-        form = PlannerEntryForm(initial={'scheduled_date': date.today()})
+        # Pre-populate date if provided in query params (e.g. clicked on calendar day)
+        initial_date = request.GET.get('date', date.today().isoformat())
+        try:
+            date.fromisoformat(initial_date)
+        except (ValueError, TypeError):
+            initial_date = date.today().isoformat()
+        form = PlannerEntryForm(initial={'scheduled_date': initial_date})
 
     upcoming = entries.filter(scheduled_date__gte=date.today()).order_by('scheduled_date', 'scheduled_time')
     past_entries = entries.filter(scheduled_date__lt=date.today()).order_by('-scheduled_date')
+
+    # Calendar Month Grid Data Calculation
+    today = date.today()
+    try:
+        year = int(request.GET.get('year', today.year))
+        month = int(request.GET.get('month', today.month))
+        if month < 1 or month > 12:
+            year, month = today.year, today.month
+    except (ValueError, TypeError):
+        year, month = today.year, today.month
+
+    if month == 1:
+        prev_month, prev_year = 12, year - 1
+    else:
+        prev_month, prev_year = month - 1, year
+
+    if month == 12:
+        next_month, next_year = 1, year + 1
+    else:
+        next_month, next_year = month + 1, year
+
+    cal = calendar.Calendar(firstweekday=calendar.MONDAY)
+    month_dates = cal.monthdatescalendar(year, month)
+
+    start_grid_date = month_dates[0][0]
+    end_grid_date = month_dates[-1][-1]
+    grid_entries = entries.filter(
+        scheduled_date__gte=start_grid_date,
+        scheduled_date__lte=end_grid_date
+    ).order_by('scheduled_time', 'id')
+
+    entries_by_date = defaultdict(list)
+    for entry in grid_entries:
+        entries_by_date[entry.scheduled_date].append(entry)
+
+    calendar_weeks = []
+    for week in month_dates:
+        week_days = []
+        for d in week:
+            week_days.append({
+                'date': d,
+                'iso_date': d.isoformat(),
+                'day_num': d.day,
+                'is_current_month': (d.month == month),
+                'is_today': (d == today),
+                'entries': entries_by_date[d],
+                'count': len(entries_by_date[d]),
+            })
+        calendar_weeks.append(week_days)
 
     context = {
         'form': form,
@@ -405,6 +466,17 @@ def planner_view(request):
         'status_filter': status_filter or '',
         'view_mode': view_mode,
         'total_entries': entries.count(),
+        'calendar_weeks': calendar_weeks,
+        'current_year': year,
+        'current_month': month,
+        'current_month_name': calendar.month_name[month],
+        'prev_year': prev_year,
+        'prev_month': prev_month,
+        'prev_month_name': calendar.month_name[prev_month],
+        'next_year': next_year,
+        'next_month': next_month,
+        'next_month_name': calendar.month_name[next_month],
+        'today': today,
     }
     return render(request, 'core/planner.html', context)
 
@@ -449,9 +521,48 @@ def caption_studio_view(request):
     niche = request.GET.get('niche', 'lifestyle')
     tone = request.GET.get('tone', 'friendly')
     length = request.GET.get('length', 'medium')
+    style = request.GET.get('style', 'conversational')
+    emoji_level = request.GET.get('emoji_level', 'moderate')
+    cta_type = request.GET.get('cta_type', 'save')
+
+    # Handle saving caption as a saved idea
+    if request.method == 'POST' and request.user.is_authenticated:
+        caption_text = request.POST.get('caption_text', '')
+        hook_text = request.POST.get('hook_text', '')
+        hashtags_text = request.POST.get('hashtags_text', '')
+        topic_post = request.POST.get('topic') or "Instagram Caption"
+        niche_post = request.POST.get('niche') or "lifestyle"
+
+        if caption_text:
+            idea = ContentIdea.objects.create(
+                user=request.user,
+                title=f"Caption: {topic_post.title()}",
+                niche=niche_post,
+                format_type='reels',
+                content_goal='engagement',
+                main_concept=f"Created in Caption Studio for '{topic_post}'.",
+                hook=hook_text or f"Hook for {topic_post}",
+                objective="Deliver engaging caption copy and hashtag groups.",
+                content_outline="• Visual text overlay hook\n• Main message breakdown\n• Explicit call to action",
+                visual_direction="High readability, neutral background with clear focus.",
+                caption=caption_text,
+                hashtags=hashtags_text,
+                call_to_action="Follow and save for more",
+                is_saved=True,
+            )
+            messages.success(request, f"Saved \"{idea.title}\" to your content library!")
+            return redirect('idea_detail', idea_id=idea.id)
 
     if topic:
-        caption_result = CaptionService.generate_caption(topic, niche, tone, length)
+        caption_result = CaptionService.generate_caption(
+            topic=topic,
+            niche=niche,
+            tone=tone,
+            length=length,
+            style=style,
+            emoji_level=emoji_level,
+            cta_type=cta_type
+        )
         hashtag_result = CaptionService.generate_hashtags(topic, niche)
 
     return render(request, 'core/caption_studio.html', {
@@ -461,6 +572,9 @@ def caption_studio_view(request):
         'niche': niche,
         'tone': tone,
         'length': length,
+        'style': style,
+        'emoji_level': emoji_level,
+        'cta_type': cta_type,
     })
 
 
@@ -510,6 +624,13 @@ def tickets_view(request):
                 if not ticket.guest_email:
                     ticket.guest_email = request.user.email
             ticket.save()
+
+            # Record guest ticket in session for authorization
+            submitted = request.session.get('submitted_tickets', [])
+            if ticket.ticket_id not in submitted:
+                submitted.append(ticket.ticket_id)
+                request.session['submitted_tickets'] = submitted
+
             messages.success(request, f"Ticket #{ticket.ticket_id} submitted! We will respond shortly.")
             return redirect('ticket_detail', ticket_id=ticket.ticket_id)
         else:
@@ -527,15 +648,29 @@ def tickets_view(request):
 
 
 def ticket_detail_view(request, ticket_id):
-    """View single ticket status and staff notes."""
+    """View single ticket status and staff notes with strict authorization."""
     ticket = get_object_or_404(SupportTicket, ticket_id=ticket_id)
 
-    # Permission check: owner or staff or guest match
+    # Permission check:
+    # 1. Staff can view any ticket.
+    # 2. Registered owner can view their ticket.
+    # 3. Submitter who holds the ticket_id in session can view it.
+    # Otherwise, reject to prevent guest ticket enumeration.
     if request.user.is_authenticated:
-        if ticket.user and ticket.user != request.user and not request.user.is_staff:
+        if request.user.is_staff:
+            pass
+        elif ticket.user and ticket.user != request.user:
             return HttpResponseForbidden("Access Denied: You do not have permission to view this ticket. (Ref: CS-AUTH-002)")
-    elif ticket.user is not None:
-        return HttpResponseForbidden("Authentication Required to view this ticket. (Ref: CS-AUTH-001)")
+        elif ticket.user is None:
+            session_tickets = request.session.get('submitted_tickets', [])
+            if ticket.ticket_id not in session_tickets and ticket.guest_email != request.user.email:
+                return HttpResponseForbidden("Access Denied: You do not have permission to view this guest ticket. (Ref: CS-AUTH-002)")
+    else:
+        if ticket.user is not None:
+            return HttpResponseForbidden("Authentication Required to view this ticket. (Ref: CS-AUTH-001)")
+        session_tickets = request.session.get('submitted_tickets', [])
+        if ticket.ticket_id not in session_tickets:
+            return HttpResponseForbidden("Access Denied: You do not have permission to view this guest ticket. (Ref: CS-AUTH-002)")
 
     return render(request, 'core/ticket_detail.html', {'ticket': ticket})
 

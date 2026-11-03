@@ -41,15 +41,48 @@
             </select>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label small fw-bold text-dark">Brand Tone</label>
-            <select name="tone" class="form-select">
-              <option value="friendly" {% if tone == 'friendly' %}selected{% endif %}>Friendly & Relatable</option>
-              <option value="informative" {% if tone == 'informative' %}selected{% endif %}>Informative & Actionable</option>
-              <option value="aesthetic" {% if tone == 'aesthetic' %}selected{% endif %}>Aesthetic & Minimal</option>
-              <option value="humorous" {% if tone == 'humorous' %}selected{% endif %}>Humorous & Casual</option>
-              <option value="persuasive" {% if tone == 'persuasive' %}selected{% endif %}>Persuasive & Direct</option>
-            </select>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-bold text-dark">Caption Style</label>
+              <select name="style" class="form-select form-select-sm">
+                <option value="conversational" {% if style == 'conversational' %}selected{% endif %}>Conversational</option>
+                <option value="storytelling" {% if style == 'storytelling' %}selected{% endif %}>Storytelling</option>
+                <option value="quick_tips" {% if style == 'quick_tips' %}selected{% endif %}>Quick Tips</option>
+                <option value="contrarian" {% if style == 'contrarian' %}selected{% endif %}>Unpopular Opinion</option>
+                <option value="how_to" {% if style == 'how_to' %}selected{% endif %}>Step-by-Step</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-bold text-dark">Brand Tone</label>
+              <select name="tone" class="form-select form-select-sm">
+                <option value="friendly" {% if tone == 'friendly' %}selected{% endif %}>Friendly</option>
+                <option value="informative" {% if tone == 'informative' %}selected{% endif %}>Informative</option>
+                <option value="aesthetic" {% if tone == 'aesthetic' %}selected{% endif %}>Aesthetic</option>
+                <option value="humorous" {% if tone == 'humorous' %}selected{% endif %}>Humorous</option>
+                <option value="persuasive" {% if tone == 'persuasive' %}selected{% endif %}>Persuasive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-bold text-dark">Call to Action (CTA)</label>
+              <select name="cta_type" class="form-select form-select-sm">
+                <option value="save" {% if cta_type == 'save' %}selected{% endif %}>Save for later</option>
+                <option value="comment" {% if cta_type == 'comment' %}selected{% endif %}>Drop a comment</option>
+                <option value="share" {% if cta_type == 'share' %}selected{% endif %}>Share with friend</option>
+                <option value="link_bio" {% if cta_type == 'link_bio' %}selected{% endif %}>Link in bio</option>
+                <option value="dm" {% if cta_type == 'dm' %}selected{% endif %}>Send a DM</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-bold text-dark">Emoji Level</label>
+              <select name="emoji_level" class="form-select form-select-sm">
+                <option value="moderate" {% if emoji_level == 'moderate' %}selected{% endif %}>Moderate ✨</option>
+                <option value="minimal" {% if emoji_level == 'minimal' %}selected{% endif %}>Minimal</option>
+                <option value="none" {% if emoji_level == 'none' %}selected{% endif %}>None (Clean)</option>
+              </select>
+            </div>
           </div>
 
           <div class="mb-4">
@@ -78,30 +111,58 @@
       {% if caption_result %}
         <!-- Generated Caption Box -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-          <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
             <div>
               <h5 class="fw-bold mb-0"><i class="bi bi-card-text text-primary me-2"></i> Generated Instagram Caption</h5>
-              <small class="text-muted">Topic: "{{ topic }}" • Tone: {{ tone|title }}</small>
+              <small class="text-muted">Topic: "{{ topic }}" • Style: {{ style|title }} • Tone: {{ tone|title }}</small>
             </div>
-            <button class="btn btn-sm btn-outline-primary" id="copy-caption-btn" onclick="copyToClipboard('caption-content', this)">
-              <i class="bi bi-clipboard me-1"></i> Copy Caption
-            </button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-primary" id="copy-caption-btn" onclick="copyToClipboard('caption-content', this)">
+                <i class="bi bi-clipboard me-1"></i> Copy Caption
+              </button>
+              {% if user.is_authenticated %}
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="topic" value="{{ topic }}">
+                  <input type="hidden" name="niche" value="{{ niche }}">
+                  <input type="hidden" name="caption_text" value="{{ caption_result.full_caption }}">
+                  <input type="hidden" name="hook_text" value="{{ caption_result.hook }}">
+                  <input type="hidden" name="hashtags_text" value="{{ hashtag_result.formatted_string }}">
+                  <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="bi bi-bookmark-plus me-1"></i> Save to Library
+                  </button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Structured Sections Preview -->
+          <div class="row g-2 mb-3">
+            <div class="col-12">
+              <div class="p-2 bg-light rounded-3 border">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="small fw-bold text-primary text-uppercase" style="font-size: 0.72rem;">HOOK (First 125 Characters)</span>
+                  <button class="btn btn-sm btn-link text-muted p-0" onclick="copyToClipboard('hook-only', this)"><i class="bi bi-clipboard"></i></button>
+                </div>
+                <div class="fw-bold small text-dark" id="hook-only">{{ caption_result.hook }}</div>
+              </div>
+            </div>
           </div>
 
           <div class="p-3 bg-light rounded-3 font-monospace small border text-dark mb-3" id="caption-content" style="white-space: pre-line;">{{ caption_result.full_caption }}</div>
 
           <div class="alert alert-light border small text-muted mb-0">
             <i class="bi bi-info-circle text-primary me-1"></i>
-            Tip: Keep the first 125 characters (the hook) as engaging as possible before Instagram truncates it behind the <em>"...more"</em> fold.
+            Tip: Keep the opening hook punchy to prevent your audience from scrolling past the fold.
           </div>
         </div>
 
         <!-- Categorized Hashtags Box -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-          <div class="d-flex align-items-center justify-content-between mb-3">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
             <div>
               <h5 class="fw-bold mb-0"><i class="bi bi-hash text-primary me-2"></i> Categorized Hashtags</h5>
-              <small class="text-muted">Structured for categorization and community discovery</small>
+              <small class="text-muted">Divided into targeted discovery groups</small>
             </div>
             <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('all-hashtags-string', this)">
               <i class="bi bi-clipboard me-1"></i> Copy All Tags
@@ -111,8 +172,11 @@
           <div class="row g-3 mb-3">
             <div class="col-md-6">
               <div class="p-3 bg-light rounded-3 border h-100">
-                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-globe text-primary me-1"></i> Broad Discovery Tags</div>
-                <div class="small text-muted">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-bold text-dark text-uppercase"><i class="bi bi-globe text-primary me-1"></i> Broad Discovery</span>
+                  <button class="btn btn-sm btn-link text-muted p-0" onclick="copyToClipboard('broad-tags-text', this)"><i class="bi bi-clipboard"></i></button>
+                </div>
+                <div class="small text-muted" id="broad-tags-text">
                   {% for t in hashtag_result.broad %}
                     <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
                   {% endfor %}
@@ -122,8 +186,11 @@
 
             <div class="col-md-6">
               <div class="p-3 bg-light rounded-3 border h-100">
-                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-tag text-success me-1"></i> Niche Focus Tags</div>
-                <div class="small text-muted">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-bold text-dark text-uppercase"><i class="bi bi-tag text-success me-1"></i> Niche Focus</span>
+                  <button class="btn btn-sm btn-link text-muted p-0" onclick="copyToClipboard('niche-tags-text', this)"><i class="bi bi-clipboard"></i></button>
+                </div>
+                <div class="small text-muted" id="niche-tags-text">
                   {% for t in hashtag_result.niche %}
                     <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
                   {% endfor %}
@@ -133,8 +200,11 @@
 
             <div class="col-md-6">
               <div class="p-3 bg-light rounded-3 border h-100">
-                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-people text-info me-1"></i> Community Tags</div>
-                <div class="small text-muted">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-bold text-dark text-uppercase"><i class="bi bi-people text-info me-1"></i> Community Tags</span>
+                  <button class="btn btn-sm btn-link text-muted p-0" onclick="copyToClipboard('community-tags-text', this)"><i class="bi bi-clipboard"></i></button>
+                </div>
+                <div class="small text-muted" id="community-tags-text">
                   {% for t in hashtag_result.community %}
                     <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
                   {% endfor %}
@@ -144,8 +214,11 @@
 
             <div class="col-md-6">
               <div class="p-3 bg-light rounded-3 border h-100">
-                <div class="small fw-bold text-dark text-uppercase mb-2"><i class="bi bi-search text-warning me-1"></i> Topic-Specific Tags</div>
-                <div class="small text-muted">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-bold text-dark text-uppercase"><i class="bi bi-search text-warning me-1"></i> Topic-Specific</span>
+                  <button class="btn btn-sm btn-link text-muted p-0" onclick="copyToClipboard('topic-tags-text', this)"><i class="bi bi-clipboard"></i></button>
+                </div>
+                <div class="small text-muted" id="topic-tags-text">
                   {% for t in hashtag_result.topic %}
                     <span class="badge bg-white text-dark border me-1 mb-1">{{ t }}</span>
                   {% endfor %}
@@ -158,7 +231,7 @@
             {{ hashtag_result.formatted_string }}
           </div>
           <div class="text-muted mt-2" style="font-size: 0.75rem;">
-            * Note: Hashtags assist with topic discovery and categorization, but do not guarantee algorithm distribution.
+            * Note: Hashtags assist with categorization and search discovery; they do not guarantee reach or engagement.
           </div>
         </div>
       {% else %}
@@ -170,7 +243,7 @@
             </span>
             <h3 class="fw-bold mb-2">Write Captions That Convert</h3>
             <p class="text-muted mx-auto mb-4" style="max-width: 460px;">
-              Enter a topic on the left to instantly generate structured captions with curiosity hooks and clean, categorized hashtags.
+              Enter a topic on the left to instantly generate structured captions with curiosity hooks, customized styles, and clean categorized hashtags.
             </p>
           </div>
         </div>

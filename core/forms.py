@@ -96,6 +96,10 @@ class IdeaGeneratorForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Leave blank to use profile default'})
     )
+    additional_instructions = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Optional creative instructions (e.g. budget-friendly, step-by-step, ASMR aesthetic)'})
+    )
 
 
 class ContentIdeaEditForm(forms.ModelForm):

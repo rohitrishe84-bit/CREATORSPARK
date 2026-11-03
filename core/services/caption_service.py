@@ -62,6 +62,7 @@ class CaptionService:
     """
     Dedicated service for generating customized Instagram captions and
     categorized hashtags (Broad, Niche, Community, Topic).
+    Supports multiple styles, lengths, emoji density, and targeted calls to action.
     """
 
     @classmethod
@@ -99,34 +100,94 @@ class CaptionService:
         }
 
     @classmethod
-    def generate_caption(cls, topic: str, niche: str, tone: str = 'friendly', length: str = 'medium') -> Dict[str, str]:
+    def generate_caption(
+        cls,
+        topic: str,
+        niche: str,
+        tone: str = 'friendly',
+        length: str = 'medium',
+        style: str = 'conversational',
+        emoji_level: str = 'moderate',
+        cta_type: str = 'save'
+    ) -> Dict[str, str]:
         topic_clean = topic.strip() if topic else "this creator strategy"
         niche_clean = niche.capitalize() if niche else "Content Creation"
 
-        if length == 'short':
-            hook = f"The biggest mistake people make with {topic_clean} 👇"
-            body = f"Stop doing what everyone else is doing. Simplify your process, test consistently, and let the results speak."
-            cta = "Double-tap if you agree and save this for later! 📌"
-        elif length == 'long':
-            hook = f"Let's have an honest conversation about {topic_clean} in {niche_clean}."
+        # Emojis helper
+        em_spark = " ✨" if emoji_level != 'none' else ""
+        em_pin = " 📌" if emoji_level != 'none' else ""
+        em_arrow = " 👇" if emoji_level != 'none' else ""
+        em_chat = " 💬" if emoji_level != 'none' else ""
+
+        # Call to Action selection
+        if cta_type == 'comment':
+            cta = f"Have you experienced this with {topic_clean}? Drop your thoughts below!{em_chat}"
+        elif cta_type == 'share':
+            cta = f"Send this to a creator friend who needs to hear this today!{em_spark}"
+        elif cta_type == 'link_bio':
+            cta = f"Tap the link in my bio to get the full step-by-step breakdown! 🔗"
+        elif cta_type == 'dm':
+            cta = f"Send me a DM with '{topic_clean.upper()}' and I'll send over the complete template!"
+        else: # save
+            cta = f"Save this checklist so you can reference it before your next post!{em_pin}"
+
+        # Generate based on Style
+        if style == 'storytelling':
+            hook = f"I used to believe that succeeding with {topic_clean} required hours of overthinking.{em_arrow}"
+            if length == 'short':
+                body = f"The moment I simplified my process in {niche_clean}, everything changed. Focus on one core takeaway per post and let consistency do the heavy lifting."
+            else:
+                body = (
+                    f"When I first started in {niche_clean}, I made every mistake in the book when approaching {topic_clean}.\n\n"
+                    f"I chased complex frameworks, bought tools I didn't need, and worried about perfection.\n\n"
+                    f"Here is what actually moved the needle:\n"
+                    f"1. Clarity: Know the exact question your viewer has.\n"
+                    f"2. Simplicity: Remove the fluff; deliver the payoff in the first 15 seconds.\n"
+                    f"3. Repetition: The best creators aren't reinventing the wheel—they're executing proven fundamentals consistently."
+                )
+        elif style == 'contrarian':
+            hook = f"Unpopular opinion: Most creator advice about {topic_clean} is completely backwards.{em_arrow}"
             body = (
-                f"When I first started focusing on {topic_clean}, I assumed the only way to win was grinding 24/7 or having fancy gear.\n\n"
-                f"The truth? It all comes down to 3 fundamentals:\n"
-                f"1. Clarity: Knowing exactly what problem you solve.\n"
-                f"2. Retention: Keeping your viewer engaged from frame one.\n"
-                f"3. Value: Leaving the viewer with something actionable they can use today.\n\n"
-                f"Save yourself weeks of trial and error by sticking to these 3 pillars."
+                f"Everyone tells you to post 5 times a day or follow every micro-trend.\n\n"
+                f"In reality? A single well-researched, high-retention post on {topic_clean} will outperform 10 rushed pieces of content.\n\n"
+                f"Quality builds trust. Trust drives saves and shares."
             )
-            cta = "Tell me in the comments: what is your #1 struggle with this right now? Let's troubleshoot together. 💬"
-        else: # medium
-            hook = f"Bookmark this before you plan your next post on {topic_clean}! ⚡"
+        elif style == 'how_to':
+            hook = f"How to master {topic_clean} in 3 actionable steps (save this!):{em_pin}"
             body = (
-                f"Here is a simple framework to make {topic_clean} work for you:\n"
-                f"• Hook with curiosity in the first 2 lines.\n"
-                f"• Keep your core explanation concise and relatable.\n"
-                f"• Give a clear next step instead of a vague takeaway."
+                f"Step 1: Define your target viewer's #1 pain point.\n"
+                f"Step 2: Present the simple transformation with proof or real-life examples.\n"
+                f"Step 3: Conclude with a clear next step rather than a vague conclusion."
             )
-            cta = "Drop a ✨ in the comments if this was helpful, and share it to your stories!"
+        elif style == 'quick_tips':
+            hook = f"3 quick reminders about {topic_clean} before you plan your next post:{em_arrow}"
+            body = (
+                f"• Hook in the first 2 lines before the fold.\n"
+                f"• One idea per post—don't overwhelm your audience.\n"
+                f"• High contrast visuals keep viewers from scrolling past."
+            )
+        else: # conversational / standard
+            if length == 'short':
+                hook = f"The biggest mistake creators make with {topic_clean}{em_arrow}"
+                body = f"Stop overcomplicating it. Simplify your delivery, test small variations, and pay attention to what your audience actually saves."
+            elif length == 'long':
+                hook = f"Let's have an honest conversation about {topic_clean} in {niche_clean}."
+                body = (
+                    f"When it comes to {topic_clean}, so many creators give up right before they find their rhythm.\n\n"
+                    f"The secret isn't magic—it's having a reliable structure:\n"
+                    f"1. Capture curiosity instantly.\n"
+                    f"2. Deliver clear, actionable value.\n"
+                    f"3. Make it easy to save or share.\n\n"
+                    f"Keep experimenting until you find the angle that resonates with your community."
+                )
+            else: # medium
+                hook = f"Bookmark this before you plan your next post on {topic_clean}!{em_spark}"
+                body = (
+                    f"Here is a simple framework to make {topic_clean} work for you:\n"
+                    f"• Hook with curiosity in the first 2 lines.\n"
+                    f"• Keep your core explanation concise and relatable.\n"
+                    f"• Give a clear next step instead of a vague takeaway."
+                )
 
         full_caption = f"{hook}\n\n{body}\n\n{cta}"
 
@@ -135,4 +196,6 @@ class CaptionService:
             'body': body,
             'cta': cta,
             'full_caption': full_caption,
+            'style': style,
+            'length': length,
         }

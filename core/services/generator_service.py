@@ -52,7 +52,7 @@ NICHE_DETAILS = {
         'tips': 'Highlight the exact muscle group working with a subtle colored overlay on the video.',
     },
     'education': {
-        'keywords': ['cheat sheets', '3 mistakes beginner make', 'step-by-step breakdown', 'free tools nobody talks about', 'study frameworks'],
+        'keywords': ['cheat sheets', '3 mistakes beginners make', 'step-by-step breakdown', 'free tools nobody talks about', 'study frameworks'],
         'audience': 'Curious learners wanting condensed, actionable industry knowledge without fluff',
         'visuals': 'Clean contrast slides, bold sans-serif typography, subtle animated highlight markers.',
         'hashtags': '#LearnOnInstagram #KnowledgeDrop #SkillBuilding #ProductivityTools #EducationalContent',
@@ -107,7 +107,7 @@ FORMAT_TEMPLATES = {
         'outline_template': (
             "• [0:00 - 0:03] THE VISUAL HOOK: Rapid motion or curiosity statement on screen with dynamic audio.\n"
             "• [0:03 - 0:10] THE CONFLICT: Call out the common creator/viewer struggle directly.\n"
-            "• [0:10 - 0:22] THE SOLUTION: Show the 3 rapid steps or technique in action with text markers.\n"
+            "• [0:10 - 0:22] THE SOLUTION: Show 3 rapid steps or technique in action with text markers.\n"
             "• [0:22 - 0:28] THE PAYOFF: Before/after transformation or final polished result.\n"
             "• [0:28 - 0:30] THE LOOP / CTA: Clear call to action on screen: 'Save this before your next shoot!'"
         ),
@@ -213,37 +213,43 @@ FORMAT_TEMPLATES = {
 
 HOOK_BANK = {
     'reach': [
-        "Stop scrolling if you're still making this huge mistake in {topic}...",
+        "Stop scrolling if you're still making this huge mistake with {topic}...",
         "Nobody is talking about this {topic} trick, but it changed everything for me.",
         "Here are 3 {niche} secrets the top 1% don't want you to know:",
-        "If I had to start over in {niche} from scratch, here is exactly what I'd do:"
+        "If I had to start over in {niche} from scratch, here is exactly what I'd do:",
+        "The fastest way to master {topic} in 2026 without burning out 👇"
     ],
     'engagement': [
         "Unpopular opinion about {topic}: Be honest, do you agree or disagree?",
         "Drop a 'YES' below if you've ever dealt with this {topic} frustration...",
         "Which of these 2 approaches do you prefer? (Slide 1 or Slide 2?)",
-        "Save this post right now because your future self is going to need it!"
+        "Save this post right now because your future self is going to need it!",
+        "Comment 'GUIDE' and I'll send you my complete breakdown on {topic}!"
     ],
     'educate': [
         "The complete 5-step blueprint to mastering {topic} (no gatekeeping):",
         "Stop wasting hours on {topic}. Here is the cheat code:",
         "How to get 10x better at {topic} in under 15 minutes a day.",
-        "A breakdown of the exact framework I used to transform my {niche}."
+        "A breakdown of the exact framework I used to transform my {niche}.",
+        "What took me 3 years to learn about {topic} summarized in 30 seconds:"
     ],
     'promote': [
         "Why I finally decided to create the ultimate solution for {topic}:",
-        "This one tool replaced 5 different apps in my {niche} workflow.",
-        "The wait is over: here is how to level up your {topic} today."
+        "This one resource replaced 5 different tools in my {niche} workflow.",
+        "The wait is over: here is how to level up your {topic} today.",
+        "Behind the scenes of how we built the ultimate {niche} toolkit:"
     ],
     'saves_shares': [
         "Bookmark this {niche} checklist before you forget it!",
         "Send this to a friend who desperately needs to hear this today:",
-        "The ultimate cheat sheet for {topic} that you will want to reference all week."
+        "The ultimate cheat sheet for {topic} that you will want to reference all week.",
+        "Screenshot this summary slide before planning your next post 📌"
     ],
     'default': [
         "Here is the reality of {topic} that most creators overlook...",
         "3 simple shifts that transformed my results in {niche}:",
-        "If you're struggling with {topic}, watch this until the end."
+        "If you're struggling with {topic}, watch this until the end.",
+        "The simple framework that changed my perspective on {topic}:"
     ]
 }
 
@@ -251,8 +257,9 @@ HOOK_BANK = {
 class GeneratorService:
     """
     Structured, template-based Instagram content generation service.
-    Designed with a modular architecture so future LLMs (Gemini/OpenAI)
-    can be plugged in smoothly without changing the consuming API.
+    Produces highly tailored concepts incorporating niche vocabulary,
+    audience pain points, visual directions, frame outlines, and filming tips.
+    Clearly distinguishes rule-based generation from external AI services.
     """
 
     @classmethod
@@ -263,6 +270,7 @@ class GeneratorService:
         tone = data.get('tone', 'relatable')
         topic_input = (data.get('topic') or '').strip()
         audience_input = (data.get('target_audience') or '').strip()
+        additional_instructions = (data.get('additional_instructions') or '').strip()
 
         niche_info = NICHE_DETAILS.get(niche, NICHE_DETAILS['other'])
         format_info = FORMAT_TEMPLATES.get(format_type, FORMAT_TEMPLATES['reels'])
@@ -289,6 +297,8 @@ class GeneratorService:
             f"An engaging {format_type.replace('_', ' ').title()} tailored for {audience}. "
             f"Focuses on delivering high value around '{topic}' with a {tone} tone to maximize {goal.replace('_', ' ')}."
         )
+        if additional_instructions:
+            concept += f" Creative Focus: {additional_instructions}."
 
         # Objective
         objective = (
@@ -301,6 +311,8 @@ class GeneratorService:
             f"{niche_info['visuals']} Framing tailored for 9:16 vertical video or 4:5 carousel slides. "
             f"Color grading styled in a {tone} mood with readable contrast."
         )
+        if additional_instructions:
+            visual_direction += f" Note: Incorporate '{additional_instructions}' into lighting and composition."
 
         # Call to Action
         if goal == 'saves_shares':
@@ -313,13 +325,14 @@ class GeneratorService:
             cta = "Follow @yourhandle for daily creator tips and strategies! ✨"
 
         # Caption
+        caption_extra = f"\n💡 Quick note: {additional_instructions}\n" if additional_instructions else ""
         caption = (
             f"{hook}\n\n"
             f"Let's be real: when it comes to {topic}, so many of us overcomplicate things or focus on the wrong details.\n\n"
             f"Here is the breakdown you actually need to know:\n"
             f"1️⃣ Master the basics first before adding complex tools.\n"
             f"2️⃣ Consistency over perfection: test small variations.\n"
-            f"3️⃣ Always audit what your audience actually engages with.\n\n"
+            f"3️⃣ Always audit what your audience actually engages with.{caption_extra}\n\n"
             f"{cta}\n\n"
             f"{niche_info['hashtags']}"
         )
@@ -342,4 +355,5 @@ class GeneratorService:
             'hashtags': niche_info['hashtags'],
             'call_to_action': cta,
             'filming_editing_tips': niche_info['tips'],
+            'generation_source': "Structured Strategy Engine (Rule-based)",
         }

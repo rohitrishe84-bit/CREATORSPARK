@@ -267,6 +267,137 @@ class ContentGeneratorAndPlannerTests(TestCase):
         self.assertEqual(del_res.status_code, 302)
         self.assertFalse(PlannerEntry.objects.filter(id=entry.id).exists())
 
+    def test_generator_with_additional_instructions(self):
+        """Test generator service and view incorporate creative focus instructions."""
+        self.client.login(username='testcreator', password='Password123!')
+        response = self.client.post(reverse('generator'), {
+            'niche': 'fitness',
+            'format_type': 'reels',
+            'content_goal': 'saves_shares',
+            'target_audience': 'Busy office workers',
+            'tone': 'informative',
+            'topic': 'Desk posture fix',
+            'additional_instructions': 'Include 3 specific seated stretches with 30s timers.',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Desk posture fix")
+        self.assertContains(response, "Structured Strategy Engine (Rule-based)")
+        self.assertContains(response, "Open in Caption Studio")
+
+        idea = ContentIdea.objects.filter(user=self.user, title__icontains='Desk posture fix').first()
+        if not idea:
+            idea = ContentIdea.objects.filter(user=self.user).latest('created_at')
+        self.assertIn("Include 3 specific seated stretches", idea.main_concept)
+
+    def test_caption_studio_styles_and_direct_save(self):
+        """Test caption studio generation options and saving directly to ContentIdea library."""
+        # Test generation with contrarian style and custom CTA
+        cap = CaptionService.generate_caption(
+            topic='Intermittent Fasting',
+            niche='fitness',
+            tone='bold',
+            length='short',
+            style='contrarian',
+            emoji_level='minimal',
+            cta_type='comment'
+        )
+        self.assertIn('Unpopular opinion', cap['hook'])
+        self.assertIn('Intermittent Fasting', cap['full_caption'])
+        self.assertIn('Drop your thoughts below', cap['cta'])
+
+        # Test POST directly saving caption into user's saved library
+        self.client.login(username='testcreator', password='Password123!')
+        response = self.client.post(reverse('caption_studio'), {
+            'topic': 'Morning Routine',
+            'niche': 'lifestyle',
+            'caption_text': 'Here is the 5am routine that doubled my productivity.',
+            'hook_text': 'Stop waking up at 5am without this habit.',
+            'hashtags_text': '#morningroutine #productivity #creatorlife',
+        })
+        self.assertEqual(response.status_code, 302)
+        saved_idea = ContentIdea.objects.filter(user=self.user, title__icontains='Morning Routine').first()
+        self.assertIsNotNone(saved_idea)
+        self.assertTrue(saved_idea.is_saved)
+        self.assertIn('Morning Routine', saved_idea.title)
+        self.assertEqual(saved_idea.caption, 'Here is the 5am routine that doubled my productivity.')
+
+    def test_planner_monthly_calendar_grid(self):
+        """Test planner monthly calendar calculations, navigation, and week matrix."""
+        self.client.login(username='testcreator', password='Password123!')
+        
+        # Create an entry on 2026-11-15
+        test_date = date(2026, 11, 15)
+        PlannerEntry.objects.create(
+            user=self.user,
+            title='November Strategy Reel',
+            format_type='reels',
+            scheduled_date=test_date,
+            status='planned'
+        )
+
+        response = self.client.get(reverse('planner'), {'view': 'calendar', 'year': 2026, 'month': 11})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['view_mode'], 'calendar')
+        self.assertEqual(response.context['current_month_name'], 'November')
+        self.assertEqual(response.context['current_year'], 2026)
+        self.assertEqual(response.context['prev_month'], 10)
+        self.assertEqual(response.context['next_month'], 12)
+        
+        # Verify calendar weeks matrix contains the entry
+        weeks = response.context['calendar_weeks']
+        self.assertTrue(len(weeks) >= 4)
+        found_entry = False
+        for week in weeks:
+            for day in week:
+                if day['date'] == test_date:
+                    self.assertEqual(len(day['entries']), 1)
+                    self.assertEqual(day['entries'][0].title, 'November Strategy Reel')
+                    found_entry = True
+        self.assertTrue(found_entry)
+        self.assertContains(response, "November Strategy Reel")
+
+    def test_ticket_security_and_authorization(self):
+        """Verify strict authorization on support tickets (prevent ID enumeration)."""
+        # 1. Unauthenticated guest submits ticket
+        guest_client = Client()
+        post_res = guest_client.post(reverse('tickets'), {
+            'guest_name': 'Guest Tester',
+            'guest_email': 'guest@example.com',
+            'subject': 'Guest issue query',
+            'description': 'Cannot load the preview.',
+            'priority': 'Low'
+        })
+        self.assertEqual(post_res.status_code, 302)
+        ticket = SupportTicket.objects.get(guest_email='guest@example.com')
+
+        # The guest client has it in session, can view it
+        view_res = guest_client.get(reverse('ticket_detail', args=[ticket.ticket_id]))
+        self.assertEqual(view_res.status_code, 200)
+        self.assertContains(view_res, ticket.ticket_id)
+
+        # 2. An unrelated unauthenticated client cannot view the guest ticket
+        unrelated_client = Client()
+        forbidden_res = unrelated_client.get(reverse('ticket_detail', args=[ticket.ticket_id]))
+        self.assertEqual(forbidden_res.status_code, 403)
+
+        # 3. Authenticated user cannot view another user's ticket
+        user_b = User.objects.create_user(username='userb', password='Password123!')
+        user_b_ticket = SupportTicket.objects.create(
+            user=user_b,
+            subject='User B private ticket',
+            description='Private information'
+        )
+
+        self.client.login(username='testcreator', password='Password123!')
+        res_forbidden = self.client.get(reverse('ticket_detail', args=[user_b_ticket.ticket_id]))
+        self.assertEqual(res_forbidden.status_code, 403)
+
+        # 4. Staff user CAN view any ticket
+        staff_user = User.objects.create_superuser(username='adminstaff', email='admin@creatorspark.io', password='Password123!')
+        self.client.login(username='adminstaff', password='Password123!')
+        staff_res = self.client.get(reverse('ticket_detail', args=[user_b_ticket.ticket_id]))
+        self.assertEqual(staff_res.status_code, 200)
+
 
 class TechnicalRequirementsTests(TestCase):
     """Automated tests for the 12 technical requirements: FAQ API, ErrorCodes, Assistant, Tickets, Health."""
@@ -461,3 +592,5 @@ class TechnicalRequirementsTests(TestCase):
         self.assertContains(response, "404 — Page Not Found", status_code=404)
         self.assertContains(response, "CS-DATA-001", status_code=404)
         self.assertContains(response, "Ask Assistant", status_code=404)
+
+

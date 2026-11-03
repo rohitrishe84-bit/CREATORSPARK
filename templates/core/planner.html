@@ -10,12 +10,22 @@
       <h1 class="h3 fw-bold mb-1"><i class="bi bi-calendar3 text-primary me-2"></i> Content Planner & Schedule</h1>
       <p class="text-muted small mb-0">Plan, track, and organize your upcoming Instagram posts ({{ total_entries }} total).</p>
     </div>
-    <div class="d-flex gap-2">
-      <button class="btn btn-primary d-flex align-items-center gap-1 shadow-sm" data-bs-toggle="collapse" data-bs-target="#newPostForm">
-        <i class="bi bi-plus-lg"></i> Schedule New Post
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <!-- View Switcher -->
+      <div class="btn-group shadow-sm me-md-2" role="group">
+        <a href="?view=list{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-sm {% if view_mode != 'calendar' %}btn-primary text-white{% else %}btn-outline-secondary bg-white{% endif %}">
+          <i class="bi bi-list-ul me-1"></i> Timeline List
+        </a>
+        <a href="?view=calendar{% if status_filter %}&status={{ status_filter }}{% endif %}&year={{ current_year }}&month={{ current_month }}" class="btn btn-sm {% if view_mode == 'calendar' %}btn-primary text-white{% else %}btn-outline-secondary bg-white{% endif %}">
+          <i class="bi bi-calendar-month me-1"></i> Monthly Grid
+        </a>
+      </div>
+
+      <button class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm px-3" data-bs-toggle="collapse" data-bs-target="#newPostForm">
+        <i class="bi bi-plus-lg"></i> Schedule Post
       </button>
-      <a href="{% url 'saved_ideas' %}" class="btn btn-outline-primary d-flex align-items-center gap-1">
-        <i class="bi bi-bookmark-plus"></i> From Saved Library
+      <a href="{% url 'saved_ideas' %}" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+        <i class="bi bi-bookmark-plus"></i> From Library
       </a>
     </div>
   </div>
@@ -62,118 +72,187 @@
 
   <!-- Status Filter Pills -->
   <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
-    <a href="{% url 'planner' %}" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+    <a href="?view={{ view_mode }}&year={{ current_year }}&month={{ current_month }}" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
       All Posts
     </a>
-    <a href="?status=planned" class="btn btn-sm {% if status_filter == 'planned' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+    <a href="?view={{ view_mode }}&year={{ current_year }}&month={{ current_month }}&status=planned" class="btn btn-sm {% if status_filter == 'planned' %}btn-primary{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
       Planned
     </a>
-    <a href="?status=in_progress" class="btn btn-sm {% if status_filter == 'in_progress' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+    <a href="?view={{ view_mode }}&year={{ current_year }}&month={{ current_month }}&status=in_progress" class="btn btn-sm {% if status_filter == 'in_progress' %}btn-primary{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
       In Progress
     </a>
-    <a href="?status=ready" class="btn btn-sm {% if status_filter == 'ready' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+    <a href="?view={{ view_mode }}&year={{ current_year }}&month={{ current_month }}&status=ready" class="btn btn-sm {% if status_filter == 'ready' %}btn-primary{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
       Ready to Publish
     </a>
-    <a href="?status=published" class="btn btn-sm {% if status_filter == 'published' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+    <a href="?view={{ view_mode }}&year={{ current_year }}&month={{ current_month }}&status=published" class="btn btn-sm {% if status_filter == 'published' %}btn-primary{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
       Published
     </a>
   </div>
 
-  <!-- Upcoming Posts Timeline -->
-  <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
-    <div class="card-header bg-white py-3">
-      <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history text-primary me-2"></i> Upcoming Content Timeline</h5>
-    </div>
-    <div class="card-body p-0">
-      {% if upcoming %}
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light small text-uppercase text-muted">
-              <tr>
-                <th style="width: 140px;">Date</th>
-                <th>Post Concept</th>
-                <th style="width: 130px;">Format</th>
-                <th style="width: 150px;">Status</th>
-                <th>Notes</th>
-                <th style="width: 120px;" class="text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for post in upcoming %}
-                <tr>
-                  <td>
-                    <div class="fw-bold text-dark">{{ post.scheduled_date|date:"M d, Y" }}</div>
-                    {% if post.scheduled_time %}<small class="text-muted">{{ post.scheduled_time|time:"H:i" }}</small>{% endif %}
-                  </td>
-                  <td>
-                    <div class="fw-bold text-dark">{{ post.title }}</div>
-                    {% if post.idea %}
-                      <small><a href="{% url 'idea_detail' post.idea.id %}" class="text-muted"><i class="bi bi-link-45deg"></i> Linked Idea</a></small>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <span class="badge bg-light text-dark border text-capitalize small">{{ post.format_type }}</span>
-                  </td>
-                  <td>
-                    <span class="badge badge-status badge-{{ post.status }}">{{ post.get_status_display }}</span>
-                  </td>
-                  <td class="small text-muted text-truncate" style="max-width: 200px;">
-                    {{ post.notes|default:'—' }}
-                  </td>
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end gap-1">
-                      <a href="{% url 'planner_edit' post.id %}" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Edit">
-                        <i class="bi bi-pencil"></i>
-                      </a>
-                      <a href="{% url 'planner_delete' post.id %}" class="btn btn-sm btn-outline-danger py-1 px-2" title="Delete">
-                        <i class="bi bi-trash"></i>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+  {% if view_mode == 'calendar' %}
+    <!-- Monthly Calendar Grid View -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
+      <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <h5 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-calendar-month text-primary me-2"></i> {{ current_month_name }} {{ current_year }}
+          </h5>
         </div>
-      {% else %}
-        <div class="p-5 text-center text-muted">
-          <i class="bi bi-calendar-x fs-1 d-block mb-2 text-muted"></i>
-          <h6 class="fw-bold">No upcoming posts found</h6>
-          <p class="small mb-3">Add upcoming posts to stay consistent with your Instagram posting schedule.</p>
-          <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newPostForm">Schedule First Post</button>
+        <div class="d-flex align-items-center gap-2">
+          <a href="?view=calendar&year={{ prev_year }}&month={{ prev_month }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <i class="bi bi-chevron-left"></i> {{ prev_month_name }}
+          </a>
+          <a href="?view=calendar&year={{ today.year }}&month={{ today.month }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-light btn-sm rounded-pill px-3 border">
+            Today
+          </a>
+          <a href="?view=calendar&year={{ next_year }}&month={{ next_month }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            {{ next_month_name }} <i class="bi bi-chevron-right"></i>
+          </a>
         </div>
-      {% endif %}
+      </div>
+      <div class="card-body p-2 p-md-3">
+        <!-- Day headers Mon-Sun -->
+        <div class="row g-1 text-center fw-bold text-muted small mb-2 text-uppercase">
+          <div class="col">Mon</div>
+          <div class="col">Tue</div>
+          <div class="col">Wed</div>
+          <div class="col">Thu</div>
+          <div class="col">Fri</div>
+          <div class="col">Sat</div>
+          <div class="col">Sun</div>
+        </div>
+        <!-- Calendar Weeks Matrix -->
+        {% for week in calendar_weeks %}
+          <div class="row g-1 mb-1">
+            {% for day in week %}
+              <div class="col" style="min-height: 110px;">
+                <div class="h-100 p-2 rounded-3 border d-flex flex-column justify-content-between {% if day.is_today %}border-primary bg-primary-subtle bg-opacity-25{% elif not day.is_current_month %}bg-light opacity-50{% else %}bg-white{% endif %}">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <span class="badge {% if day.is_today %}bg-primary text-white{% else %}text-muted{% endif %} fw-bold" style="font-size: 0.8rem;">
+                      {{ day.day_num }}
+                    </span>
+                    <a href="?view=calendar&year={{ current_year }}&month={{ current_month }}&date={{ day.iso_date }}#newPostForm" class="btn btn-link p-0 text-muted small" title="Add post on {{ day.iso_date }}" data-bs-toggle="collapse" data-bs-target="#newPostForm">
+                      <i class="bi bi-plus-circle"></i>
+                    </a>
+                  </div>
+                  <div class="d-flex flex-column gap-1 overflow-auto" style="max-height: 90px;">
+                    {% for entry in day.entries %}
+                      <div class="p-1 rounded border small bg-white shadow-xs" style="font-size: 0.72rem; border-left: 3px solid var(--bs-primary) !important;">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <strong class="text-truncate" style="max-width: 85px;" title="{{ entry.title }}">{{ entry.title }}</strong>
+                          <span class="badge badge-status badge-{{ entry.status }} p-0 px-1" style="font-size: 0.62rem;">{{ entry.status|slice:":4" }}</span>
+                        </div>
+                        <div class="text-muted text-capitalize d-flex justify-content-between align-items-center mt-1">
+                          <span>{{ entry.format_type }}</span>
+                          <a href="{% url 'planner_edit' entry.id %}" class="text-secondary"><i class="bi bi-pencil" style="font-size: 0.7rem;"></i></a>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
-  </div>
-
-  <!-- Completed / Past Posts -->
-  {% if past_entries %}
-    <div class="card border-0 shadow-sm rounded-4 bg-white">
+  {% else %}
+    <!-- Upcoming Posts Timeline (List View) -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
       <div class="card-header bg-white py-3">
-        <h6 class="fw-bold mb-0 text-muted"><i class="bi bi-check2-all me-2"></i> Past / Completed Posts</h6>
+        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history text-primary me-2"></i> Upcoming Content Timeline</h5>
       </div>
       <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0 text-muted small">
-            <tbody>
-              {% for post in past_entries %}
+        {% if upcoming %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light small text-uppercase text-muted">
                 <tr>
-                  <td style="width: 140px;">{{ post.scheduled_date|date:"M d, Y" }}</td>
-                  <td><strong>{{ post.title }}</strong></td>
-                  <td style="width: 130px;" class="text-capitalize">{{ post.format_type }}</td>
-                  <td style="width: 150px;">
-                    <span class="badge badge-status badge-{{ post.status }}">{{ post.get_status_display }}</span>
-                  </td>
-                  <td class="text-end" style="width: 120px;">
-                    <a href="{% url 'planner_edit' post.id %}" class="btn btn-sm btn-link text-muted p-0"><i class="bi bi-pencil"></i></a>
-                  </td>
+                  <th style="width: 140px;">Date</th>
+                  <th>Post Concept</th>
+                  <th style="width: 130px;">Format</th>
+                  <th style="width: 150px;">Status</th>
+                  <th>Notes</th>
+                  <th style="width: 120px;" class="text-end">Actions</th>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {% for post in upcoming %}
+                  <tr>
+                    <td>
+                      <div class="fw-bold text-dark">{{ post.scheduled_date|date:"M d, Y" }}</div>
+                      {% if post.scheduled_time %}<small class="text-muted">{{ post.scheduled_time|time:"H:i" }}</small>{% endif %}
+                    </td>
+                    <td>
+                      <div class="fw-bold text-dark">{{ post.title }}</div>
+                      {% if post.idea %}
+                        <small><a href="{% url 'idea_detail' post.idea.id %}" class="text-muted"><i class="bi bi-link-45deg"></i> Linked Idea</a></small>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-dark border text-capitalize small">{{ post.format_type }}</span>
+                    </td>
+                    <td>
+                      <span class="badge badge-status badge-{{ post.status }}">{{ post.get_status_display }}</span>
+                    </td>
+                    <td class="small text-muted text-truncate" style="max-width: 200px;">
+                      {{ post.notes|default:'—' }}
+                    </td>
+                    <td class="text-end">
+                      <div class="d-flex justify-content-end gap-1">
+                        <a href="{% url 'planner_edit' post.id %}" class="btn btn-sm btn-outline-secondary py-1 px-2" title="Edit">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'planner_delete' post.id %}" class="btn btn-sm btn-outline-danger py-1 px-2" title="Delete">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="p-5 text-center text-muted">
+            <i class="bi bi-calendar-x fs-1 d-block mb-2 text-muted"></i>
+            <h6 class="fw-bold">No upcoming posts found</h6>
+            <p class="small mb-3">Add upcoming posts to stay consistent with your Instagram posting schedule.</p>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newPostForm">Schedule First Post</button>
+          </div>
+        {% endif %}
       </div>
     </div>
+
+    <!-- Completed / Past Posts -->
+    {% if past_entries %}
+      <div class="card border-0 shadow-sm rounded-4 bg-white">
+        <div class="card-header bg-white py-3">
+          <h6 class="fw-bold mb-0 text-muted"><i class="bi bi-check2-all me-2"></i> Past / Completed Posts</h6>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-muted small">
+              <tbody>
+                {% for post in past_entries %}
+                  <tr>
+                    <td style="width: 140px;">{{ post.scheduled_date|date:"M d, Y" }}</td>
+                    <td><strong>{{ post.title }}</strong></td>
+                    <td style="width: 130px;" class="text-capitalize">{{ post.format_type }}</td>
+                    <td style="width: 150px;">
+                      <span class="badge badge-status badge-{{ post.status }}">{{ post.get_status_display }}</span>
+                    </td>
+                    <td class="text-end" style="width: 120px;">
+                      <a href="{% url 'planner_edit' post.id %}" class="btn btn-sm btn-link text-muted p-0"><i class="bi bi-pencil"></i></a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    {% endif %}
   {% endif %}
 </div>
 {% endblock %}

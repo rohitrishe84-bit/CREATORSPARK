@@ -24,10 +24,58 @@
     </div>
   </div>
 
+  <!-- Creator Onboarding & Quickstart Card -->
+  {% if total_generated == 0 or saved_ideas_count == 0 or planned_count == 0 %}
+    <div class="card border-0 shadow-sm rounded-4 text-white p-4 mb-4" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%) !important;">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <span class="badge bg-white text-primary fw-bold text-uppercase px-3 py-1 mb-2">Creator Quickstart Guide</span>
+          <h4 class="fw-bold mb-1">Get Your Instagram Content Engine Running 🚀</h4>
+          <p class="mb-3 opacity-90 small">Follow these 3 quick steps to plan and schedule your high-performing Instagram feed.</p>
+          <div class="d-flex flex-wrap gap-2 gap-md-4">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                {% if profile.niche %}<i class="bi bi-check-lg"></i>{% else %}1{% endif %}
+              </span>
+              <span class="small fw-semibold">1. Profile & Niche Configured</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge rounded-circle {% if total_generated > 0 %}bg-white text-primary{% else %}bg-white bg-opacity-25 text-white{% endif %} d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                {% if total_generated > 0 %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}
+              </span>
+              <span class="small fw-semibold">2. Generate Post Outlines</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge rounded-circle {% if planned_count > 0 %}bg-white text-primary{% else %}bg-white bg-opacity-25 text-white{% endif %} d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                {% if planned_count > 0 %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}
+              </span>
+              <span class="small fw-semibold">3. Schedule on Calendar</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+          {% if total_generated == 0 %}
+            <a href="{% url 'generator' %}" class="btn btn-light text-primary fw-bold px-4 py-2 shadow-sm">
+              <i class="bi bi-magic me-1"></i> Generate First Post
+            </a>
+          {% elif planned_count == 0 %}
+            <a href="{% url 'planner' %}" class="btn btn-light text-primary fw-bold px-4 py-2 shadow-sm">
+              <i class="bi bi-calendar-plus me-1"></i> Schedule First Post
+            </a>
+          {% else %}
+            <a href="{% url 'generator' %}" class="btn btn-light text-primary fw-bold px-4 py-2 shadow-sm">
+              <i class="bi bi-sparkles me-1"></i> Generate More Ideas
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   <!-- Metric KPI Cards -->
   <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm p-3">
+      <div class="card border-0 shadow-sm p-3 rounded-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <span class="text-muted small fw-bold">TOTAL GENERATED</span>
           <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle" style="width: 32px; height: 32px;">
@@ -40,7 +88,7 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm p-3">
+      <div class="card border-0 shadow-sm p-3 rounded-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <span class="text-muted small fw-bold">SAVED TO LIBRARY</span>
           <span class="d-inline-flex align-items-center justify-content-center bg-info-subtle text-info rounded-circle" style="width: 32px; height: 32px;">
@@ -53,7 +101,7 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm p-3">
+      <div class="card border-0 shadow-sm p-3 rounded-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <span class="text-muted small fw-bold">SCHEDULED POSTS</span>
           <span class="d-inline-flex align-items-center justify-content-center bg-warning-subtle text-warning rounded-circle" style="width: 32px; height: 32px;">
@@ -66,7 +114,7 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm p-3">
+      <div class="card border-0 shadow-sm p-3 rounded-4">
         <div class="d-flex align-items-center justify-content-between mb-2">
           <span class="text-muted small fw-bold">FAVORITES</span>
           <span class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 32px; height: 32px;">
@@ -83,8 +131,8 @@
   <div class="row g-4 mb-4">
     <!-- Recent Ideas Column -->
     <div class="col-lg-7">
-      <div class="card border-0 shadow-sm h-100">
-        <div class="card-header d-flex align-items-center justify-content-between bg-white">
+      <div class="card border-0 shadow-sm h-100 rounded-4">
+        <div class="card-header d-flex align-items-center justify-content-between bg-white py-3">
           <div class="fw-bold fs-6"><i class="bi bi-lightbulb text-warning me-1"></i> Recent Content Concepts</div>
           <a href="{% url 'saved_ideas' %}" class="small fw-semibold text-primary">View All</a>
         </div>
@@ -96,22 +144,28 @@
                   <div class="me-3">
                     <div class="d-flex align-items-center gap-2 mb-1">
                       <span class="badge bg-light text-dark border small text-capitalize">{{ idea.format_type }}</span>
-                      {% if idea.is_favorite %}<i class="bi bi-heart-fill text-danger small"></i>{% endif %}
+                      {% if idea.is_favorite %}<i class="bi bi-heart-fill text-danger small" title="Favorite"></i>{% endif %}
                       <span class="text-muted" style="font-size: 0.75rem;">{{ idea.created_at|date:"M d, H:i" }}</span>
                     </div>
                     <a href="{% url 'idea_detail' idea.id %}" class="fw-bold text-dark text-decoration-none">
                       {{ idea.title }}
                     </a>
-                    <div class="text-muted small text-truncate" style="max-width: 420px;">
+                    <div class="text-muted small text-truncate" style="max-width: 380px;">
                       Hook: "{{ idea.hook }}"
                     </div>
                   </div>
-                  <div class="d-flex gap-1">
-                    <a href="{% url 'idea_detail' idea.id %}" class="btn btn-sm btn-outline-secondary">
+                  <div class="d-flex align-items-center gap-1">
+                    <a href="{% url 'toggle_favorite' idea.id %}" class="btn btn-sm {% if idea.is_favorite %}btn-danger text-white{% else %}btn-outline-secondary{% endif %} py-1 px-2" title="Toggle Favorite">
+                      <i class="bi bi-heart{% if idea.is_favorite %}-fill{% endif %}"></i>
+                    </a>
+                    <a href="{% url 'schedule_idea' idea.id %}" class="btn btn-sm btn-outline-warning py-1 px-2" title="Schedule to Calendar">
+                      <i class="bi bi-calendar-plus"></i>
+                    </a>
+                    <a href="{% url 'idea_detail' idea.id %}" class="btn btn-sm btn-outline-secondary py-1 px-2" title="View Details">
                       <i class="bi bi-eye"></i>
                     </a>
                     {% if not idea.is_saved %}
-                      <a href="{% url 'save_idea' idea.id %}" class="btn btn-sm btn-outline-primary" title="Save to library">
+                      <a href="{% url 'save_idea' idea.id %}" class="btn btn-sm btn-outline-primary py-1 px-2" title="Save to library">
                         <i class="bi bi-bookmark-plus"></i>
                       </a>
                     {% endif %}
@@ -123,7 +177,18 @@
             <div class="p-5 text-center text-muted">
               <i class="bi bi-sparkles fs-1 d-block mb-2 text-primary"></i>
               <h6 class="fw-bold">No generated ideas yet</h6>
-              <p class="small mb-3">Jump into the Content Idea Generator to create your first Instagram outline.</p>
+              <p class="small mb-3">Jump into the Content Idea Generator or pick a quick starter prompt below:</p>
+              <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+                <a href="{% url 'generator' %}" class="badge bg-light text-dark border p-2 text-decoration-none">
+                  ⚡ 3 Reels ideas for {{ profile.get_niche_display }}
+                </a>
+                <a href="{% url 'generator' %}" class="badge bg-light text-dark border p-2 text-decoration-none">
+                  📊 Step-by-step Carousel breakdown
+                </a>
+                <a href="{% url 'caption_studio' %}?niche={{ profile.niche }}&topic=Top+Mistakes" class="badge bg-light text-dark border p-2 text-decoration-none">
+                  ✍️ Caption Studio: Top Mistakes
+                </a>
+              </div>
               <a href="{% url 'generator' %}" class="btn btn-sm btn-primary">Generate Ideas Now</a>
             </div>
           {% endif %}
@@ -134,8 +199,8 @@
     <!-- Chart & Upcoming Posts Column -->
     <div class="col-lg-5">
       <!-- Format Chart -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-white fw-bold fs-6">
+      <div class="card border-0 shadow-sm mb-4 rounded-4">
+        <div class="card-header bg-white fw-bold fs-6 py-3">
           <i class="bi bi-pie-chart text-primary me-1"></i> Content Formats Distribution
         </div>
         <div class="card-body">
@@ -146,8 +211,8 @@
       </div>
 
       <!-- Upcoming Planned Posts -->
-      <div class="card border-0 shadow-sm">
-        <div class="card-header d-flex align-items-center justify-content-between bg-white">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header d-flex align-items-center justify-content-between bg-white py-3">
           <div class="fw-bold fs-6"><i class="bi bi-calendar-check text-success me-1"></i> Upcoming on Calendar</div>
           <a href="{% url 'planner' %}" class="small fw-semibold text-primary">Open Planner</a>
         </div>
