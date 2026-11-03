@@ -72,13 +72,14 @@ CreatorSpark eliminates this creative friction through modular templates, struct
 ---
 
 ## 4. Main Features
-1. **Instagram Content Idea Generator:** Tailored by niche, format (Reels, Carousels, Stories, UGC, etc.), objective, tone, and audience.
-2. **Saved Content Library:** Search, filter by niche/format/goal, star favorites, edit and delete concepts.
-3. **Content Planner & Schedule:** Calendar and timeline views, tracking statuses (`idea`, `planned`, `in_progress`, `ready`, `published`).
-4. **Caption & Hashtag Studio:** Craft punchy or long-form captions with categorized hashtags (Broad, Niche, Community, Topic).
+1. **Instagram Content Idea Generator:** Tailored by niche, format (Reels, Carousels, Stories, UGC, etc.), objective, tone, audience, and custom creative instructions. Transparently powered by a rule-based strategy engine with direct transfer to Caption Studio and Content Planner.
+2. **Saved Content Library:** Search, filter by niche/format/goal, star favorites, edit and delete concepts with full creator notes.
+3. **Content Planner & Calendar:** Interactive dual-mode scheduling offering both a timeline list and a full 7-column monthly calendar grid with month-by-month navigation, workflow statuses (`idea`, `planned`, `in_progress`, `ready`, `published`), and one-click day scheduling.
+4. **Caption & Hashtag Studio:** Craft punchy or long-form captions tailored across 5 styles (Conversational, Storytelling, Quick Tips, Contrarian, Step-by-Step), emoji density controls, and customizable CTAs, with instant one-click saving directly into your Content Library.
 5. **Visual Inspiration Gallery:** High-definition photography discovery powered by Pexels API with curated offline fallback.
-6. **Spark Assistant Global Chat Widget:** Available on every page, answering platform FAQs, resolving error codes, and escalating inquiries.
-7. **SQL-Backed Knowledge Base & Support Tickets:** Standardized error codes, REST APIs, and user-isolated ticket tracking.
+6. **Spark Assistant Global Chat Widget:** Available on every page, answering platform FAQs, resolving error codes, and escalating inquiries to support tickets.
+7. **SQL-Backed Knowledge Base & Support Tickets:** Standardized error codes, REST APIs, and user-isolated ticket tracking with strict guest session authorization.
+8. **Creator Dashboard:** Real-time KPI metrics, format distribution donut chart (Chart.js), quickstart onboarding checklist, and direct action triggers.
 
 ---
 
