@@ -5,8 +5,11 @@
 [![Database](https://img.shields.io/badge/PostgreSQL%20%2F%20SQLite-336791?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-rohitrishe84--bit%2FCREATORSPARK-181717?style=flat&logo=github)](https://github.com/rohitrishe84-bit/CREATORSPARK)
 
-> **Live Deployment URL:** *Ready for deployment via Render Blueprint (`render.yaml`). Link added post-deploy: `https://creatorspark.onrender.com`*
+> **GitHub Repository:** [https://github.com/rohitrishe84-bit/CREATORSPARK](https://github.com/rohitrishe84-bit/CREATORSPARK)  
+> **Live Deployment Blueprint:** `render.yaml` configured for Render Blueprint deployment  
+> **Live Web Service URL:** `https://creatorspark.onrender.com`
 
 ---
 
@@ -245,8 +248,8 @@ PEXELS_API_KEY=your-optional-pexels-key
 
 ## 16. Local Installation
 ```bash
-git clone <repository-url>
-cd creatorspark
+git clone https://github.com/rohitrishe84-bit/CREATORSPARK.git
+cd CREATORSPARK
 ```
 
 ## 17. Virtual Environment Setup
